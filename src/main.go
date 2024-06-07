@@ -1,7 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"github.com/priyam-trambadia/project-wall/src/db"
+)
 
 func main() {
-	fmt.Println("It's running ... ")
+	db := db.ConnectDB()
+	defer db.Close()
 }
