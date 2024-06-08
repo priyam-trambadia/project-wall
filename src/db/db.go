@@ -3,24 +3,20 @@ package db
 import (
 	"database/sql"
 	"log"
-	"os"
 
-	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 )
 
-func ConnectDB() *sql.DB {
+type Database_config struct {
+	URL string
+}
 
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalln("[-] Error in loding .env for database")
-	}
+func (db_cfg Database_config) ConnectDB() *sql.DB {
 
-	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	db, err := sql.Open("postgres", db_cfg.URL)
 	if err != nil {
 		log.Fatalln("[-] Fail to create database connection")
 	}
-
 	log.Println("[+] Database connected")
 
 	return db
