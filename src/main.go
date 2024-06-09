@@ -1,16 +1,13 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"net/http"
-
 	"github.com/priyam-trambadia/project-wall/src/db"
+	"github.com/priyam-trambadia/project-wall/src/server"
 )
 
 type config struct {
-	port     int
 	database db.Database_config
+	server   server.Server_config
 }
 
 func main() {
@@ -20,14 +17,5 @@ func main() {
 	db := cfg.database.ConnectDB()
 	defer db.Close()
 
-	mux := http.NewServeMux()
-
-	log.Println("[+] Start server listening on", cfg.port)
-	err := http.ListenAndServe(
-		fmt.Sprintf(":%d", cfg.port),
-		mux)
-	if err != nil {
-		log.Fatalln("[-] Fail to create server")
-	}
-
+	cfg.server.StartServer()
 }
