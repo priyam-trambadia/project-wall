@@ -1,4 +1,4 @@
-package db
+package main
 
 import (
 	"database/sql"
@@ -7,13 +7,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Database_config struct {
-	URL string
-}
+func (cfg *config) connectDatabase() *sql.DB {
 
-func (db_cfg Database_config) ConnectDB() *sql.DB {
-
-	db, err := sql.Open("postgres", db_cfg.URL)
+	db, err := sql.Open("postgres", cfg.database.url)
 	if err != nil {
 		log.Fatalln("[-] Fail to create database connection")
 	}

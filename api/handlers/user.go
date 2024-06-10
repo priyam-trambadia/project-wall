@@ -1,15 +1,15 @@
-package controllers
+package handlers
 
 import (
 	"context"
 	"fmt"
 	"net/http"
 
-	"github.com/priyam-trambadia/project-wall/src/ui/pages"
+	"github.com/priyam-trambadia/project-wall/web/templates"
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	pages.Login().Render(context.Background(), w)
+	templates.Login().Render(context.Background(), w)
 }
 
 func LoginPOST(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +29,7 @@ func LoginPOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	pages.Register().Render(context.Background(), w)
+	templates.Register().Render(context.Background(), w)
 }
 
 func RegisterPOST(w http.ResponseWriter, r *http.Request) {
