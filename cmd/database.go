@@ -13,7 +13,12 @@ func (cfg *config) connectDatabase() *sql.DB {
 	if err != nil {
 		log.Fatalln("[-] Fail to create database connection")
 	}
-	log.Println("[+] Database connected")
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatalln("[-] Fail to establish database connection")
+	}
+	log.Println("[+] Database connected successfully")
 
 	return db
 }

@@ -17,9 +17,7 @@ func main() {
 
 	db := cfg.connectDatabase()
 	defer db.Close()
-	models.DB = db
-
-	db.Ping()
+	models.SetDatabaseVar(db)
 
 	cfg.startServer()
 }

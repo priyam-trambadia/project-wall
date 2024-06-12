@@ -2,48 +2,62 @@ package handlers
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
+	"github.com/priyam-trambadia/project-wall/api/utils"
+	"github.com/priyam-trambadia/project-wall/api/utils/jwt"
+	"github.com/priyam-trambadia/project-wall/internal/models"
 	"github.com/priyam-trambadia/project-wall/web/templates"
 )
 
-func Login(w http.ResponseWriter, r *http.Request) {
+func UserLogin(w http.ResponseWriter, r *http.Request) {
 	templates.Login().Render(context.Background(), w)
 }
 
-func LoginPOST(w http.ResponseWriter, r *http.Request) {
+func UserLoginPOST(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm() // Parse form data from the request body
 	if err != nil {
 		// Handle error (e.g., log the error or return an error response)
 		return
 	}
 
-	username := r.FormValue("username")
+	email := r.FormValue("email")
 	password := r.FormValue("password")
 
-	fmt.Println(username)
-	fmt.Println(password)
+	user := models.User{Email: email, Password: password}
+	ok := user.ValidateUser()
+
+	if !ok {
+
+	} else {
+		accessToken := jwt.GenerateAccessToken(user.ID)
+		user.RefreshToken = jwt.GenerateRefreshToken(user.ID)
+
+		user.UpdateRefreshToken()
+
+		utils.SetTokenCookie(w, accessToken, user.RefreshToken)
+	}
 
 	http.Redirect(w, r, "/", http.StatusFound)
 }
 
-func Register(w http.ResponseWriter, r *http.Request) {
+func UserRegister(w http.ResponseWriter, r *http.Request) {
 	templates.Register().Render(context.Background(), w)
 }
 
-func RegisterPOST(w http.ResponseWriter, r *http.Request) {
+func UserRegisterPOST(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm() // Parse form data from the request body
 	if err != nil {
 		// Handle error (e.g., log the error or return an error response)
 		return
 	}
 
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	var user models.User
+	user.Name = r.FormValue("name")
+	user.Email = r.FormValue("email")
+	user.Password = r.FormValue("password")
 
-	fmt.Println(username)
-	fmt.Println(password)
+	user.Insert()
 
-	http.Redirect(w, r, "/", http.StatusFound)
+	http.Redirect(w, r, "/user/login", http.StatusFound)
 }
