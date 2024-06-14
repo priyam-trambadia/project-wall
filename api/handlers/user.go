@@ -61,3 +61,9 @@ func UserRegisterPOST(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/user/login", http.StatusFound)
 }
+
+func UserLogoutPOST(w http.ResponseWriter, r *http.Request) {
+	utils.DeleteTokenCookie(w)
+	http.Redirect(w, r, "/", http.StatusFound)
+
+}

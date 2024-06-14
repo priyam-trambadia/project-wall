@@ -19,3 +19,20 @@ func SetTokenCookie(w http.ResponseWriter, accessToken string, refreshToken stri
 	http.SetCookie(w, refreshTokenCookie)
 
 }
+
+func DeleteTokenCookie(w http.ResponseWriter) {
+	accessTokenCookie := &http.Cookie{
+		Name:   "access_token",
+		MaxAge: -1,
+		Path:   "/",
+	}
+
+	refreshTokenCookie := &http.Cookie{
+		Name:   "refresh_token",
+		MaxAge: -1,
+		Path:   "/",
+	}
+
+	http.SetCookie(w, accessTokenCookie)
+	http.SetCookie(w, refreshTokenCookie)
+}

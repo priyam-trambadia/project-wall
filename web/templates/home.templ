@@ -1,15 +1,38 @@
 package templates
 
 templ Home() {
-	<div>home </div>
-	<a href="/user/login">login</a>
-	<br/>
-	<a href="/user/register">register</a>
+<!DOCTYPE html>
+<head>
+</head>
+<body>	
+	@Navbar()
 
-	@ProjectCard()
+<div>home </div>
+<a href="/user/login">login</a>
+<br />
+<a href="/user/register">register</a>
+<br />
+<form action="/user/logout" method="POST">
+	<button>Logout</button>
+</form>
+
+</body>
 }
 
 
-templ ProjectCard(){
-	<h1> Title </h1>
+templ Navbar(){
+	<nav class="navbar">
+		<ul>
+			<li>
+				<a href="#">About</a>
+			</li>
+			<li>
+				<a href="#">Home</a>
+			</li>
+			<li>
+				<a href="#">Contact</a>
+			</li>
+		</ul>
+
+	</nav>
 }

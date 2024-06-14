@@ -9,4 +9,7 @@ type Project struct {
 	OwnerID      int64
 	CreatedAt    time.Time
 	LastSyncedAt time.Time
+	Tags         []int64
+	Languages    []int64
+	Bookmarks    int64
 }
