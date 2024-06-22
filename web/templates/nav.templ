@@ -1,0 +1,28 @@
+package templates
+
+templ nav(isLogin bool) {
+	<nav>
+		<div id="nav-left">
+			<a href="/">ProjectWall</a>
+		</div>
+		<div id="nav-right">
+			<ul>
+				if isLogin {
+					<li>
+						<a href="/user/logout">Logout</a>
+					</li>
+					<li>
+						<a href="/user/profile">User</a>
+					</li>
+				} else {
+					<li>
+						<a href="/user/login">Login</a>
+					</li>
+					<li>
+						<a href="/user/register">Register</a>
+					</li>
+				}
+			</ul>
+		</div>
+	</nav>
+}

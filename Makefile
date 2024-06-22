@@ -8,3 +8,7 @@ run: templ
 
 templ:
 	@${BIN_PATH}/templ generate -path ./web/templates
+
+.PHONEY: migrate
+migrate:	
+	@${BIN_PATH}/migrate -path=./migrations -database=${DATABASE_URL} up

@@ -10,7 +10,7 @@ import "context"
 import "io"
 import "bytes"
 
-func Register() templ.Component {
+func footer() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -23,7 +23,7 @@ func Register() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><title>Register Page</title></head><body><div><h1>Register</h1><form action=\"/user/register\" method=\"post\"><label for=\"name\">Fullname:</label> <input type=\"text\" id=\"name\" name=\"name\" required><br><label for=\"email\">E-mail:</label> <input type=\"email\" id=\"email\" name=\"email\" required><br><label for=\"password\">Password:</label> <input type=\"password\" id=\"password\" name=\"password\" required> <button type=\"submit\">Register</button></form></div></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<footer>&copy; 2024 ProjectWall. All rights reserved.</footer>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

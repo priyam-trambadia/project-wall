@@ -118,3 +118,9 @@ func (project *Project) Delete() {
 
 	database.Exec(query, project.ID)
 }
+
+func GetAllProjects() []Project {
+	projects := make([]Project, 0)
+
+	return projects
+}

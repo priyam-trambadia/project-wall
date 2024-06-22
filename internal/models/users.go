@@ -11,6 +11,7 @@ type User struct {
 	Password     string
 	RefreshToken string
 	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 func (u *User) Insert() {

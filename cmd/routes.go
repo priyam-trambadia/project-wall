@@ -1,10 +1,17 @@
 package main
 
-import "github.com/priyam-trambadia/project-wall/api/handlers"
+import (
+	"net/http"
+
+	"github.com/priyam-trambadia/project-wall/api/handlers"
+)
 
 func (srv *server) addRoutes() {
 
 	srv.mux.HandleFunc("GET /{$}", handlers.Root)
+
+	fileServer := http.FileServer(http.Dir("./web/static"))
+	srv.mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
 
 	srv.mux.HandleFunc("GET /user/register", handlers.UserRegister)
 	srv.mux.HandleFunc("POST /user/register", handlers.UserRegisterPOST)
@@ -12,17 +19,19 @@ func (srv *server) addRoutes() {
 	srv.mux.HandleFunc("GET /user/login", handlers.UserLogin)
 	srv.mux.HandleFunc("POST /user/login", handlers.UserLoginPOST)
 
-	srv.mux.HandleFunc("PUT /user/update", "[[[ add handler here ]]]")
-	srv.mux.HandleFunc("POST /user/logout", handlers.UserLogoutPOST)
+	// srv.mux.HandleFunc("PUT /user/update", >>handlerHere)
+	srv.mux.HandleFunc("GET /user/logout", handlers.UserLogout)
 
-	srv.mux.HandleFunc("GET /project/add", "[[[ add handler here ]]]")
-	srv.mux.HandleFunc("POST /project/add", "[[[ add handler here ]]]")
+	// srv.mux.HandleFunc("GET /user/profile", >>handlerHere)
 
-	srv.mux.HandleFunc("PUT /project/update/{project_id}", "[[[ add handler here ]]]")
-	srv.mux.HandleFunc("DELETE /project/remove/{project_id}", "[[[ add handler here ]]]")
-	srv.mux.HandleFunc("PATCH /project/bookmark/{project_id}", "[[[ add handler here ]]]")
+	srv.mux.HandleFunc("GET /project/add", handlers.ProjectAdd)
+	srv.mux.HandleFunc("POST /project/add", handlers.ProjectAddPOST)
 
-	srv.mux.HandleFunc("GET /project/trending/tags", "[[[ add handler here ]]]")
-	srv.mux.HandleFunc("GET /project/trending/languages", "[[[ add handler here ]]]")
+	// srv.mux.HandleFunc("PUT /project/update/{project_id}", >>handlerHere)
+	// srv.mux.HandleFunc("DELETE /project/remove/{project_id}", >>handlerHere)
+	// srv.mux.HandleFunc("PATCH /project/bookmark/{project_id}", >>handlerHere)
 
+	// srv.mux.HandleFunc("GET /project/search", >>handlerHere)
+	srv.mux.HandleFunc("GET /project/tag/search", handlers.ProjectTagSearch)
+	srv.mux.HandleFunc("GET /project/language/search", handlers.ProjectLanguageSearch)
 }

@@ -1,8 +1,11 @@
 package models
 
+import "time"
+
 type ProjectBookmark struct {
 	ProjectID int64
 	UserID    int64
+	CreatedAt time.Time
 }
 
 func (projectBookmark *ProjectBookmark) Insert() {

@@ -11,7 +11,14 @@ import (
 )
 
 func UserLogin(w http.ResponseWriter, r *http.Request) {
-	templates.Login().Render(context.Background(), w)
+	ctx := r.Context()
+	isLogin := ctx.Value("is_user_logged_in").(bool)
+
+	if isLogin {
+		http.Redirect(w, r, "/", http.StatusFound)
+	} else {
+		templates.LoginPage().Render(context.Background(), w)
+	}
 }
 
 func UserLoginPOST(w http.ResponseWriter, r *http.Request) {
@@ -42,7 +49,14 @@ func UserLoginPOST(w http.ResponseWriter, r *http.Request) {
 }
 
 func UserRegister(w http.ResponseWriter, r *http.Request) {
-	templates.Register().Render(context.Background(), w)
+	ctx := r.Context()
+	isLogin := ctx.Value("is_user_logged_in").(bool)
+
+	if isLogin {
+		http.Redirect(w, r, "/", http.StatusFound)
+	} else {
+		templates.RegisterPage().Render(context.Background(), w)
+	}
 }
 
 func UserRegisterPOST(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +76,7 @@ func UserRegisterPOST(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/user/login", http.StatusFound)
 }
 
-func UserLogoutPOST(w http.ResponseWriter, r *http.Request) {
+func UserLogout(w http.ResponseWriter, r *http.Request) {
 	utils.DeleteTokenCookie(w)
 	http.Redirect(w, r, "/", http.StatusFound)
 

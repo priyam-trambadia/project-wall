@@ -1,0 +1,112 @@
+package templates
+
+import "github.com/priyam-trambadia/project-wall/internal/models"
+import "fmt"
+
+templ HomePage(isLogin bool, projects []models.Project) {
+	<!DOCTYPE html>
+	<head>
+		@commonAssets()
+	</head>
+	<body>
+		@nav(isLogin)
+		<div>
+			@main(projects)
+			@side()
+		</div>
+		@flotingButtonAddProject()
+		@footer()
+	</body>
+}
+
+templ main(projects []models.Project) {
+	@projectSearch()
+	@projectList(projects)
+}
+
+templ projectSearch() {
+	<input
+		type="search"
+		name="search"
+		placeholder="Search for a project..."
+		hx-get="/project/search"
+		hx-trigger="input changed delay:500ms, search"
+		hx-target="next #search-results"
+		hx-vals='js:{"tags": tags, "languages": languages}'
+	/>
+}
+
+templ projectList(projects []models.Project) {
+	<div id="project-list">
+		for _, project := range projects {
+			@projectCard(project)
+		}
+	</div>
+}
+
+templ projectCard(project models.Project) {
+	<div class="project-card">
+		<div class="project-title">{ project.Title }</div>
+		<div class="project-description">{ project.Description }</div>
+		<div>
+			for _, tag := range project.Tags {
+				<span>{ tag }</span>
+			}
+		</div>
+		<div>
+			for _, language := range project.Languages {
+				<span>{ language }</span>
+			}
+		</div>
+		<div class="project-details">
+			<div class="project-date">
+				{ project.CreatedAt.Format("01 Jun 2000") }
+			</div>
+			<div class="project-bookmark-count">
+				{ fmt.Sprintf("%d",project.BookmarkCount) }
+			</div>
+		</div>
+		<div class="project-actions">
+			<div class="project-bookmark-btn">Bookmark</div>
+			<div class="project-owner-page">Owner</div>
+		</div>
+	</div>
+}
+
+templ side() {
+	<div id="sidebar">
+		@sideCard("Trending Tags", "/project/tag/search")
+		@sideCard("Trending Languages", "/project/language/search")
+	</div>
+}
+
+templ sideCard(title, target string) {
+	<div class="side-card">
+		<h3>{ title } </h3>
+		<input
+			type="search"
+			name="search"
+			placeholder="Search for a tag..."
+			hx-get={ target }
+			hx-trigger="input changed delay:500ms, search"
+			hx-target="next .search-results"
+		/>
+		<button type="button">prev</button>
+		<button type="button">next</button>
+		<div>
+			<div class="selected"></div>
+			<div class="search-results"></div>
+		</div>
+	</div>
+}
+
+templ flotingButtonAddProject() {
+	<button
+		hx-get="/project/add"
+		hx-prompt="Enter project github link"
+		hx-target="#response"
+	>
+		Add Project
+	</button>
+	<div id="response"></div>
+}
