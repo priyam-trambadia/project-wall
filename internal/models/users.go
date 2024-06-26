@@ -31,7 +31,7 @@ func (u *User) Insert() {
 
 func (u *User) ValidateUser() bool {
 	query := `
-						SELECT _id
+						SELECT id
 						FROM users
 						WHERE email = $1 AND password = $2;
 					 `
@@ -55,7 +55,7 @@ func (u *User) UpdateRefreshToken() {
 	query := `
 						UPDATE users
 						SET refresh_token = $2
-						WHERE _id = $1;
+						WHERE id = $1;
 					 `
 
 	args := []interface{}{

@@ -6,7 +6,7 @@ import "fmt"
 templ HomePage(isLogin bool, projects []models.Project) {
 	<!DOCTYPE html>
 	<head>
-		@commonAssets()
+		@commonAssetsLoadFirst()
 	</head>
 	<body>
 		@nav(isLogin)
@@ -14,8 +14,9 @@ templ HomePage(isLogin bool, projects []models.Project) {
 			@main(projects)
 			@side()
 		</div>
-		@flotingButtonAddProject()
+		@floatingButtonAddProject()
 		@footer()
+		@commonAssetsLoadLast()
 	</body>
 }
 
@@ -82,7 +83,7 @@ templ side() {
 
 templ sideCard(title, target string) {
 	<div class="side-card">
-		<h3>{ title } </h3>
+		<h3>{ title }</h3>
 		<input
 			type="search"
 			name="search"
@@ -93,20 +94,15 @@ templ sideCard(title, target string) {
 		/>
 		<button type="button">prev</button>
 		<button type="button">next</button>
-		<div>
+		<div class="search-selection-container">
 			<div class="selected"></div>
 			<div class="search-results"></div>
 		</div>
 	</div>
 }
 
-templ flotingButtonAddProject() {
-	<button
-		hx-get="/project/add"
-		hx-prompt="Enter project github link"
-		hx-target="#response"
-	>
-		Add Project
-	</button>
-	<div id="response"></div>
+templ floatingButtonAddProject() {
+	<div>
+		<button id="add-project-fbtn" class="floating-button">Add Project </button>
+	</div>
 }

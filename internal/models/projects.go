@@ -1,18 +1,21 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Project struct {
 	ID            int64
-	GithubLink    string
-	Title         string
-	Description   string
+	GithubLink    string `json:"github_link"`
+	Title         string `json:"title"`
+	Description   string `json:"description"`
 	OwnerID       int64
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 	LastSyncedAt  time.Time
 	Tags          []string
-	Languages     []string
+	Languages     []string `json:"languages"`
 	BookmarkCount int64
 }
 
@@ -29,8 +32,11 @@ func (project *Project) Insert() {
 		project.OwnerID,
 	}
 
-	database.QueryRow(query, args...).Scan(&project.ID)
-
+	err := database.QueryRow(query, args...).Scan(&project.ID)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(project.ID)
 	//adding tags
 	for _, tagName := range project.Tags {
 		tag := Tag{Name: tagName}

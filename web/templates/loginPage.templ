@@ -7,12 +7,13 @@ templ LoginPage() {
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Login Page</title>
-			@commonAssets()
+			@commonAssetsLoadFirst()
 		</head>
 		<body>
 			@nav(false)
 			@loginForm()
 			@footer()
+			@commonAssetsLoadLast()
 		</body>
 	</html>
 }

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/priyam-trambadia/project-wall/api/utils"
@@ -24,6 +25,7 @@ func UserLogin(w http.ResponseWriter, r *http.Request) {
 func UserLoginPOST(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm() // Parse form data from the request body
 	if err != nil {
+		fmt.Println(err)
 		// Handle error (e.g., log the error or return an error response)
 		return
 	}
@@ -35,7 +37,7 @@ func UserLoginPOST(w http.ResponseWriter, r *http.Request) {
 	ok := user.ValidateUser()
 
 	if !ok {
-
+		fmt.Println("not ok\n", user)
 	} else {
 		accessToken := jwt.GenerateAccessToken(user.ID)
 		user.RefreshToken = jwt.GenerateRefreshToken(user.ID)

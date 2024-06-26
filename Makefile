@@ -11,4 +11,5 @@ templ:
 
 .PHONEY: migrate
 migrate:	
+	@${BIN_PATH}/migrate -path=./migrations -database=${DATABASE_URL} down
 	@${BIN_PATH}/migrate -path=./migrations -database=${DATABASE_URL} up
