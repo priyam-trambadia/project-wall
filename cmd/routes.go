@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/priyam-trambadia/project-wall/api/handlers"
+	"github.com/priyam-trambadia/project-wall/api/middlewares"
 )
 
 func (srv *server) addRoutes() {
@@ -24,8 +25,14 @@ func (srv *server) addRoutes() {
 
 	// srv.mux.HandleFunc("GET /user/profile", >>handlerHere)
 
-	srv.mux.HandleFunc("GET /project/add", handlers.ProjectAdd)
-	srv.mux.HandleFunc("POST /project/add", handlers.ProjectAddPOST)
+	srv.mux.HandleFunc(
+		"GET /project/add",
+		middlewares.AuthenticationRequired(handlers.ProjectAdd),
+	)
+	srv.mux.HandleFunc(
+		"POST /project/add",
+		middlewares.AuthenticationRequired(handlers.ProjectAddPOST),
+	)
 
 	// srv.mux.HandleFunc("PUT /project/update/{project_id}", >>handlerHere)
 	// srv.mux.HandleFunc("DELETE /project/remove/{project_id}", >>handlerHere)

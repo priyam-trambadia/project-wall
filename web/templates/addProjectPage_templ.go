@@ -31,7 +31,7 @@ func AddProjectPage(project models.Project, languageJSON string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = commonAssetsLoadFirst().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = commonAssetsLoadEarly().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -43,7 +43,7 @@ func AddProjectPage(project models.Project, languageJSON string) templ.Component
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = commonAssetsLoadLast().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = commonAssetsLoadLater().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

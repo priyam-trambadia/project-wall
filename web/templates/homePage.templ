@@ -6,7 +6,8 @@ import "fmt"
 templ HomePage(isLogin bool, projects []models.Project) {
 	<!DOCTYPE html>
 	<head>
-		@commonAssetsLoadFirst()
+		<title>ProjectWall</title>
+		@commonAssetsLoadEarly()
 	</head>
 	<body>
 		@nav(isLogin)
@@ -16,7 +17,7 @@ templ HomePage(isLogin bool, projects []models.Project) {
 		</div>
 		@floatingButtonAddProject()
 		@footer()
-		@commonAssetsLoadLast()
+		@commonAssetsLoadLater()
 	</body>
 }
 

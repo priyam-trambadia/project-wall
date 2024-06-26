@@ -9,11 +9,11 @@ templ AddProjectPage(project models.Project, languageJSON string) {
 	<html lang="en">
 		<head>
 			<title>Document</title>
-			@commonAssetsLoadFirst()
+			@commonAssetsLoadEarly()
 		</head>
 		<body>
 			@projectForm(project, languageJSON)
-			@commonAssetsLoadLast()
+			@commonAssetsLoadLater()
 		</body>
 	</html>
 }

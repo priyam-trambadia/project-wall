@@ -1,10 +1,10 @@
 package templates
 
-templ commonAssetsLoadFirst() {
+templ commonAssetsLoadEarly() {
 	<link href="/static/css/main.css" rel="stylesheet"/>
 	<script src="/static/js/vendor/htmx.mini.js"></script>
 }
 
-templ commonAssetsLoadLast() {
+templ commonAssetsLoadLater() {
 	<script src="/static/js/app.js"></script>
 }

@@ -2,8 +2,10 @@ package middlewares
 
 import (
 	"context"
+	"log"
 	"net/http"
 
+	"github.com/priyam-trambadia/project-wall/api/handlers"
 	"github.com/priyam-trambadia/project-wall/api/utils"
 	"github.com/priyam-trambadia/project-wall/api/utils/jwt"
 )
@@ -48,4 +50,21 @@ func Authenticate(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func AuthenticationRequired(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		isUserLoggedIn, ok := ctx.Value("is_user_logged_in").(bool)
+
+		if !ok {
+			log.Println("[-] Error in AuthenticationRequired type conversion.")
+		}
+
+		if !ok || !isUserLoggedIn {
+			handlers.UserLogin(w, r)
+		} else {
+			next.ServeHTTP(w, r)
+		}
+	}
 }
