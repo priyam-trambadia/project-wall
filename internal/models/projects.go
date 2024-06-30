@@ -6,127 +6,247 @@ import (
 )
 
 type Project struct {
-	ID            int64
-	GithubLink    string `json:"github_link"`
-	Title         string `json:"title"`
-	Description   string `json:"description"`
-	OwnerID       int64
-	CreatedAt     time.Time
-	UpdatedAt     time.Time
-	LastSyncedAt  time.Time
-	Tags          []string
-	Languages     []string `json:"languages"`
-	BookmarkCount int64
+	ID          int64     `json:"id"`
+	GithubURL   string    `json:"github_url"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	OwnerID     int64     `json:"owner_id"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Tags        []string  `json:"tags"`
+	Languages   []string  `json:"languages"`
 }
 
-func (project *Project) Insert() {
+func (project *Project) Insert() error {
 	query := `
-		INSERT INTO projects (github_link, title, description, owner_id)
+		INSERT INTO projects (github_url, title, description, owner_id)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id;
 	`
 	args := []interface{}{
-		project.GithubLink,
+		project.GithubURL,
 		project.Title,
 		project.Description,
 		project.OwnerID,
 	}
 
-	err := database.QueryRow(query, args...).Scan(&project.ID)
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println(project.ID)
-	//adding tags
-	for _, tagName := range project.Tags {
-		tag := Tag{Name: tagName}
-
-		err := tag.GetID()
-		if err != nil {
-			tag.Insert()
+	if err := database.QueryRow(query, args...).Scan(&project.ID); err != nil {
+		return err
+	} else {
+		// adding tags
+		for _, tagName := range project.Tags {
+			if tagID, err := GetOrCreateTagID(tagName); err != nil {
+				return err
+			} else {
+				projectTag := ProjectTag{ProjectID: project.ID, TagID: tagID}
+				if err := projectTag.Insert(); err != nil {
+					return err
+				}
+			}
 		}
 
-		projectTag := ProjectTag{ProjectID: project.ID, TagID: tag.ID}
-		projectTag.Insert()
-	}
-
-	//adding languages
-	for _, languageName := range project.Languages {
-		language := Language{Name: languageName}
-
-		err := language.GetID()
-		if err != nil {
-			language.Insert()
+		//adding languages
+		for _, languageName := range project.Languages {
+			if languageID, err := GetOrCreateLanguageID(languageName); err != nil {
+				return err
+			} else {
+				projectLanguage := ProjectLanguage{ProjectID: project.ID, LanguageID: languageID}
+				if err := projectLanguage.Insert(); err != nil {
+					return err
+				}
+			}
 		}
 
-		projectLanguage := ProjectLanguage{ProjectID: project.ID, LanguageID: language.ID}
-		projectLanguage.Insert()
+		return nil
 	}
 }
 
-func (project *Project) Update() {
+func (project *Project) Update() error {
 	query := `
 		UPDATE projects
-		SET title = $1, description = $2, updated_at = $3,  
-		WHERE id = $4;
+		SET description = $1, updated_at = $2,  
+		WHERE id = $3;
 	`
 	args := []interface{}{
-		project.Title,
 		project.Description,
 		time.Now(),
 		project.ID,
 	}
 
-	database.Exec(query, args...)
+	if _, err := database.Exec(query, args...); err != nil {
+		return err
+	} else {
+		// updating tags
+		if oldTagList, err := GetProjectTagIDs(project.ID); err != nil {
+			return err
+		} else {
+			newTagList := make([]int64, 0)
+			for _, tagName := range project.Tags {
+				if tagID, err := GetOrCreateTagID(tagName); err != nil {
+					return err
+				} else {
+					newTagList = append(newTagList, tagID)
+				}
+			}
 
-	// updating tags
-	projectTag := ProjectTag{ProjectID: project.ID}
-	oldTagList := projectTag.GetTags()
-
-	newTagList := make([]int64, 0)
-	for _, tagName := range project.Tags {
-		tag := Tag{Name: tagName}
-
-		err := tag.GetID()
-		if err != nil {
-			tag.Insert()
+			if err := SyncProjectTags(project.ID, oldTagList, newTagList); err != nil {
+				return err
+			}
 		}
 
-		newTagList = append(newTagList, tag.ID)
-	}
+		// updating languages
+		if oldLanguageList, err := GetProjectLanguagesIDs(project.ID); err != nil {
+			return err
+		} else {
+			newLanguageList := make([]int64, 0)
+			for _, languageName := range project.Languages {
+				if languageID, err := GetOrCreateLanguageID(languageName); err != nil {
+					return err
+				} else {
+					newLanguageList = append(newLanguageList, languageID)
+				}
 
-	projectTag.UpdateProjectTags(oldTagList, newTagList)
-
-	// updating languages
-	projectLanguage := ProjectLanguage{ProjectID: project.ID}
-	oldLanguageList := projectLanguage.GetLanguages()
-
-	newLanguageList := make([]int64, 0)
-	for _, languageName := range project.Languages {
-		language := Language{Name: languageName}
-
-		err := language.GetID()
-		if err != nil {
-			language.Insert()
+				if err := SyncProjectLanguages(project.ID, oldLanguageList, newLanguageList); err != nil {
+					return err
+				}
+			}
 		}
-
-		newLanguageList = append(newLanguageList, language.ID)
+		return nil
 	}
-
-	projectLanguage.UpdateProjectLanguages(oldLanguageList, newLanguageList)
 }
 
-func (project *Project) Delete() {
+func (project *Project) Get() error {
+	query := `
+		SELECT 
+			github_url,
+			title,
+			description,
+			owner_id,
+			created_at,
+			updated_at
+		FROM projects
+		WHERE id = $1;	
+	`
+	err := database.QueryRow(query, project.ID).Scan(
+		&project.GithubURL,
+		&project.Title,
+		&project.OwnerID,
+		&project.CreatedAt,
+		&project.UpdatedAt,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	if tagIDs, err := GetProjectTagIDs(project.ID); err != nil {
+		return err
+	} else {
+		if project.Tags, err = GetTagNames(tagIDs); err != nil {
+			return err
+		}
+	}
+
+	if languageIDs, err := GetProjectLanguagesIDs(project.ID); err != nil {
+		return err
+	} else {
+		if project.Languages, err = GetLanguageNames(languageIDs); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (project *Project) Delete() error {
 	query := ` 
 		DELETE FROM projects
 		WHERE project_id = $1;
 	`
 
-	database.Exec(query, project.ID)
+	_, err := database.Exec(query, project.ID)
+	return err
 }
 
-func GetAllProjects() []Project {
-	projects := make([]Project, 0)
+type SortBy string
 
-	return projects
+const (
+	Date          SortBy = "created_at"
+	BookmarkCount SortBy = "bookmark_count"
+)
+
+type SortDirection string
+
+const (
+	Ascending  SortDirection = "ASC"
+	Descending SortDirection = "DESC"
+)
+
+type ProjectSearchQuery struct {
+	Title          string
+	TagIDs         []int64
+	LanguageIDs    []int64
+	OrganizationID int64
+	SortBy         SortBy
+	SortDirection  SortDirection
+}
+
+func (searchQuery *ProjectSearchQuery) FindProjectsWithFullTextSearch() ([]int64, error) {
+
+	if searchQuery.SortBy == "" {
+		searchQuery.SortBy = Date
+	}
+
+	if searchQuery.SortDirection == "" {
+		searchQuery.SortDirection = Ascending
+	}
+
+	query := fmt.Sprintf(` 
+		SELECT 
+			id,
+			COUNT(*) AS bookmark_count
+		FROM projects AS p
+		INNER JOIN project_bookmarks AS pb
+		ON p.id = pb.project_id
+		WHERE 
+			(	$1 = '' OR
+				to_tsvector('simple', title) @@ plainto_tsquery('simple', $1) ) AND
+			( $2 = 0 OR
+			  id IN ( SELECT project_id
+							 	FROM project_tags
+					 			WHERE tag_id IN %s ) ) AND
+			( $3 = 0 OR 
+				id IN ( SELECT project_id
+								FROM project_languages
+								WHERE language_id IN %s ) ) AND
+			(	$4 = 0 OR			
+				owner_id IN ( SELECT id
+											FROM users
+											WHERE organization_id = $4 ) )
+		GROUP BY p.id												
+		ORDER BY %s %s;`,
+		ArraytoStringRoundBrackets(searchQuery.TagIDs),
+		ArraytoStringRoundBrackets(searchQuery.LanguageIDs),
+		searchQuery.SortBy,
+		searchQuery.SortDirection,
+	)
+
+	if rows, err := database.Query(query); err != nil {
+		return nil, err
+	} else {
+		defer rows.Close()
+
+		projectIDs := make([]int64, 0)
+
+		for rows.Next() {
+			var id int64
+
+			if err := rows.Scan(&id); err != nil {
+				return nil, err
+			} else {
+				projectIDs = append(projectIDs, id)
+			}
+		}
+		return projectIDs, nil
+	}
 }

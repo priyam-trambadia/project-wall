@@ -5,67 +5,148 @@ import (
 )
 
 type User struct {
-	ID           int64
-	Name         string
-	Email        string
-	Password     string
-	RefreshToken string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID             int64
+	Name           string
+	Email          string
+	Password       string
+	Bio            string
+	SocialLinks    []string
+	LocationID     int64
+	OrganizationID int64
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
+	RefreshToken   string
 }
 
-func (u *User) Insert() {
+func (user *User) Insert() error {
 	query := `
-						INSERT INTO users (name, email, password)
-						VALUES ($1, $2, $3);
-					 `
+		INSERT INTO users (
+			name, 
+			email, 
+			password, 
+			bio, 
+			social_links, 
+			location_id, 
+			organization_id
+		)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		RETURNING id;
+	`
 
 	args := []interface{}{
-		u.Name,
-		u.Email,
-		u.Password,
+		user.Name,
+		user.Email,
+		user.Password,
+		user.Bio,
+		user.SocialLinks,
+		user.LocationID,
+		user.OrganizationID,
 	}
 
-	database.QueryRow(query, args...)
+	return database.QueryRow(query, args...).Scan(&user.ID)
 }
 
-func (u *User) ValidateUser() bool {
+func (user *User) Update() error {
 	query := `
-						SELECT id
-						FROM users
-						WHERE email = $1 AND password = $2;
-					 `
-
+		UPDATE users 
+		SET 
+			name = $1,
+			bio = $2,
+			social_links = $3,
+			location_id = $4,
+			updated_at = $5
+		WHERE id = $6;
+	`
 	args := []interface{}{
-		u.Email,
-		u.Password,
+		user.Name,
+		user.Bio,
+		user.SocialLinks,
+		user.LocationID,
+		time.Now(),
+		user.ID,
 	}
 
-	err := database.QueryRow(query, args...).Scan(&u.ID)
+	_, err := database.Exec(query, args...)
+	return err
+}
+
+func (user *User) Get() error {
+	query := `
+		SELECT 
+			name,
+			email,
+			password,
+			bio,
+			social_links,
+			location_id,
+			organization_id,
+			created_at,
+			updated_at,
+			refresh_token
+		FROM users
+		WHERE id = $1;
+	`
+
+	err := database.QueryRow(query, user.ID).Scan(
+		&user.Name,
+		&user.Email,
+		&user.Password,
+		&user.Bio,
+		&user.SocialLinks,
+		&user.LocationID,
+		&user.OrganizationID,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&user.RefreshToken,
+	)
+	return err
+}
+
+func (user *User) Delete() error {
+	query := `
+		DELETE FROM users
+		WHERE id = $1;
+	`
+	_, err := database.Exec(query, user.ID)
+	return err
+}
+
+// utilities
+
+func GetUserID(email, password string) (int64, error) {
+	query := `
+		SELECT id
+		FROM users
+		WHERE email = $1 AND password = $2;
+	`
+	args := []interface{}{
+		email,
+		password,
+	}
+
+	var id int64
+	err := database.QueryRow(query, args...).Scan(&id)
 
 	if err != nil {
-		return false
-	} else {
-		return true
+		return 0, err
 	}
+
+	return id, nil
 }
 
-func (u *User) UpdateRefreshToken() {
+func UpdateUserRefreshToken(id int64, refresh_token string) error {
 
 	query := `
-						UPDATE users
-						SET refresh_token = $2
-						WHERE id = $1;
-					 `
+		UPDATE users
+		SET refresh_token = $1
+		WHERE id = $2;
+	`
 
 	args := []interface{}{
-		u.ID,
-		u.RefreshToken,
+		id,
+		refresh_token,
 	}
 
-	database.QueryRow(query, args...)
-}
-
-func (u *User) Delete() {
-
+	_, err := database.Exec(query, args...)
+	return err
 }

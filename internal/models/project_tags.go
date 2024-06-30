@@ -7,75 +7,27 @@ type ProjectTag struct {
 	TagID     int64
 }
 
-func (projectTag *ProjectTag) Insert() {
+func (projectTag *ProjectTag) Insert() error {
 	query := ` 
 		INSERT INTO project_tags (project_id, tag_id)
 		VALUES ($1, $2);
 	`
-	database.QueryRow(query, projectTag.ProjectID, projectTag.TagID)
+	_, err := database.Exec(query, projectTag.ProjectID, projectTag.TagID)
+	return err
 }
 
-func (projectTag *ProjectTag) Delete() {
+func (projectTag *ProjectTag) Delete() error {
 	query := ` 
 		DELETE FROM project_tags
 		WHERE project_id = $1 AND tag_id = $2;
 	`
-
-	database.QueryRow(query, projectTag.ProjectID, projectTag.TagID)
+	_, err := database.Exec(query, projectTag.ProjectID, projectTag.TagID)
+	return err
 }
 
-func (projectTag *ProjectTag) GetTags() []int64 {
-	tags := make([]int64, 0)
+// utilites
 
-	query := `
-		SELECT tag_id
-		FROM project_tags
-		WHERE project_id = $1;
-	`
-
-	rows, _ := database.Query(query, projectTag.ProjectID)
-	defer rows.Close()
-
-	for rows.Next() {
-		var tagID int64
-
-		err := rows.Scan(&tagID)
-		if err != nil {
-			break
-		}
-
-		tags = append(tags, tagID)
-	}
-
-	return tags
-}
-
-func (projectTag *ProjectTag) GetProjects() []int64 {
-	projects := make([]int64, 0)
-
-	query := `
-		SELECT project_id
-		FROM project_tags
-		WHERE tag_id = $1;
-	`
-	rows, _ := database.Query(query, projectTag.TagID)
-	defer rows.Close()
-
-	for rows.Next() {
-		var projectID int64
-
-		err := rows.Scan(&projectID)
-		if err != nil {
-			break
-		}
-
-		projects = append(projects, projectID)
-	}
-
-	return projects
-}
-
-func (projectTag *ProjectTag) UpdateProjectTags(oldTagList []int64, newTagList []int64) {
+func SyncProjectTags(projectID int64, oldTagList, newTagList []int64) error {
 	sort.Slice(oldTagList, func(i, j int) bool {
 		return oldTagList[i] < oldTagList[j]
 	})
@@ -113,13 +65,71 @@ func (projectTag *ProjectTag) UpdateProjectTags(oldTagList []int64, newTagList [
 	}
 
 	for _, tagID := range deleteList {
-		deleteProjectTag := ProjectTag{ProjectID: projectTag.ProjectID, TagID: tagID}
-		deleteProjectTag.Delete()
-
+		deleteProjectTag := ProjectTag{ProjectID: projectID, TagID: tagID}
+		if err := deleteProjectTag.Delete(); err != nil {
+			return err
+		}
 	}
 
 	for _, tagID := range insertList {
-		insertProjectTag := ProjectTag{ProjectID: projectTag.ProjectID, TagID: tagID}
-		insertProjectTag.Insert()
+		insertProjectTag := ProjectTag{ProjectID: projectID, TagID: tagID}
+		if err := insertProjectTag.Insert(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func GetProjectTagIDs(projectID int64) ([]int64, error) {
+
+	query := `
+		SELECT tag_id
+		FROM project_tags
+		WHERE project_id = $1;
+	`
+	if rows, err := database.Query(query, projectID); err != nil {
+		return nil, err
+	} else {
+		defer rows.Close()
+
+		tags := make([]int64, 0)
+		for rows.Next() {
+			var tagID int64
+
+			if err := rows.Scan(&tagID); err != nil {
+				return nil, err
+			} else {
+				tags = append(tags, tagID)
+			}
+		}
+
+		return tags, nil
+	}
+}
+
+func GetTagProjectIDs(tagID int64) ([]int64, error) {
+	query := `
+		SELECT project_id
+		FROM project_tags
+		WHERE tag_id = $1;
+	`
+	if rows, err := database.Query(query, tagID); err != nil {
+		return nil, err
+	} else {
+		defer rows.Close()
+
+		projects := make([]int64, 0)
+		for rows.Next() {
+			var projectID int64
+
+			if err := rows.Scan(&projectID); err != nil {
+				return nil, err
+			} else {
+				projects = append(projects, projectID)
+			}
+		}
+
+		return projects, nil
 	}
 }

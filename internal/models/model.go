@@ -2,10 +2,15 @@ package models
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 )
 
-var database *sql.DB
+var (
+	database *sql.DB
+
+	ErrRecordNotFound = sql.ErrNoRows
+)
 
 func SetDatabaseVar(db *sql.DB) {
 
@@ -17,4 +22,21 @@ func SetDatabaseVar(db *sql.DB) {
 	}
 
 	log.Println("[+] Model database variable set successful")
+}
+
+func ArraytoStringRoundBrackets(arr []int64) string {
+	str := "("
+
+	for _, ele := range arr {
+		str += fmt.Sprintf("%d,", ele)
+	}
+
+	strLen := len(str)
+	if str[strLen-1] == ',' {
+		str = str[:strLen-1]
+	}
+
+	str += ")"
+
+	return str
 }

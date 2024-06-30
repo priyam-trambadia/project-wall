@@ -8,70 +8,46 @@ type ProjectBookmark struct {
 	CreatedAt time.Time
 }
 
-func (projectBookmark *ProjectBookmark) Insert() {
+func (projectBookmark *ProjectBookmark) Insert() error {
 	query := ` 
 		INSERT INTO project_bookmarks (project_id, user_id)
 		VALUES ($1, $2);
 	`
-	database.QueryRow(query, projectBookmark.ProjectID, projectBookmark.UserID)
+	_, err := database.Exec(query, projectBookmark.ProjectID, projectBookmark.UserID)
+	return err
 }
 
-func (projectBookmark *ProjectBookmark) Delete() {
+func (projectBookmark *ProjectBookmark) Delete() error {
 	query := ` 
 		DELETE FROM project_bookmarks
 		WHERE project_id = $1 AND user_id = $2;
 	`
-
-	database.QueryRow(query, projectBookmark.ProjectID, projectBookmark.UserID)
+	_, err := database.Exec(query, projectBookmark.ProjectID, projectBookmark.UserID)
+	return err
 }
 
-func (projectBookmark *ProjectBookmark) GetBookmarks() []int64 {
-	bookmarks := make([]int64, 0)
-
-	query := `
-		SELECT user_id
-		FROM project_bookmarks
-		WHERE project_id = $1;
-	`
-
-	rows, _ := database.Query(query, projectBookmark.ProjectID)
-	defer rows.Close()
-
-	for rows.Next() {
-		var UserID int64
-
-		err := rows.Scan(&UserID)
-		if err != nil {
-			break
-		}
-
-		bookmarks = append(bookmarks, UserID)
-	}
-
-	return bookmarks
-}
-
-func (projectBookmark *ProjectBookmark) GetProjects() []int64 {
-	projects := make([]int64, 0)
-
+func GetUserBookmarkedProjectIDs(userID int64) ([]int64, error) {
 	query := `
 		SELECT project_id
 		FROM project_bookmarks
 		WHERE user_id = $1;
 	`
-	rows, _ := database.Query(query, projectBookmark.UserID)
-	defer rows.Close()
+	if rows, err := database.Query(query, userID); err != nil {
+		return nil, err
+	} else {
 
-	for rows.Next() {
-		var projectID int64
+		defer rows.Close()
+		projects := make([]int64, 0)
 
-		err := rows.Scan(&projectID)
-		if err != nil {
-			break
+		for rows.Next() {
+			var projectID int64
+
+			if err := rows.Scan(&projectID); err != nil {
+				return nil, err
+			} else {
+				projects = append(projects, projectID)
+			}
 		}
-
-		projects = append(projects, projectID)
+		return projects, nil
 	}
-
-	return projects
 }
