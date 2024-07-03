@@ -250,3 +250,33 @@ func (searchQuery *ProjectSearchQuery) FindProjectsWithFullTextSearch() ([]int64
 		return projectIDs, nil
 	}
 }
+
+func GetProjectOwnerID(projectID int64) (int64, error) {
+	query := `
+		SELECT owner_id
+		FROM projects
+		WHERE id = $1;
+	`
+	var ownerID int64
+	if err := database.QueryRow(query, projectID).Scan(&ownerID); err != nil {
+		return 0, err
+	} else {
+		return ownerID, nil
+	}
+}
+
+func IsProjectExists(projectID int64) (bool, error) {
+	query := `
+		SELECT EXISTS (
+			SELECT 1	
+			FROM projects
+			WHERE id = $1
+		);
+	`
+	var exists bool
+	if err := database.QueryRow(query, projectID).Scan(&exists); err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}

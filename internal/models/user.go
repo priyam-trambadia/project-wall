@@ -150,3 +150,19 @@ func UpdateUserRefreshToken(id int64, refresh_token string) error {
 	_, err := database.Exec(query, args...)
 	return err
 }
+
+func IsUserExists(userID int64) (bool, error) {
+	query := `
+		SELECT EXISTS (
+			SELECT 1
+			FROM users
+			WHERE id = $1
+		);
+	`
+	var exists bool
+	if err := database.QueryRow(query, userID).Scan(&exists); err != nil {
+		return false, err
+	}
+
+	return exists, nil
+}

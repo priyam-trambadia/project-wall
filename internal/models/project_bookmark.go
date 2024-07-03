@@ -17,6 +17,20 @@ func (projectBookmark *ProjectBookmark) Insert() error {
 	return err
 }
 
+func (projectBookmark *ProjectBookmark) Get() error {
+	query := `
+		SELECT created_at 
+		FROM project_bookmarks
+		WHERE project_id = $1 AND user_id = $2;
+	`
+	args := []interface{}{
+		projectBookmark.ProjectID,
+		projectBookmark.UserID,
+	}
+
+	return database.QueryRow(query, args...).Scan(&projectBookmark.CreatedAt)
+}
+
 func (projectBookmark *ProjectBookmark) Delete() error {
 	query := ` 
 		DELETE FROM project_bookmarks
