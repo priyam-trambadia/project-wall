@@ -191,7 +191,7 @@ type ProjectSearchQuery struct {
 	SortDirection  SortDirection
 }
 
-func (searchQuery *ProjectSearchQuery) FindProjectsWithFullTextSearch() ([]int64, error) {
+func (searchQuery *ProjectSearchQuery) FindProjectsWithFullTextSearch() ([]Project, error) {
 
 	if searchQuery.SortBy == "" {
 		searchQuery.SortBy = Date
@@ -236,18 +236,47 @@ func (searchQuery *ProjectSearchQuery) FindProjectsWithFullTextSearch() ([]int64
 	} else {
 		defer rows.Close()
 
-		projectIDs := make([]int64, 0)
+		projects := make([]Project, 0)
 
 		for rows.Next() {
-			var id int64
+			var project Project
 
-			if err := rows.Scan(&id); err != nil {
+			err2 := rows.Scan(
+				&project.ID,
+				&project.GithubURL,
+				&project.Title,
+				&project.Description,
+				&project.OwnerID,
+				&project.CreatedAt,
+				&project.UpdatedAt,
+			)
+
+			if err2 != nil {
 				return nil, err
-			} else {
-				projectIDs = append(projectIDs, id)
 			}
+
+			var tagIDs []int64
+			if tagIDs, err2 = GetProjectTagIDs(project.ID); err2 != nil {
+				return nil, err2
+			}
+
+			if project.Tags, err2 = GetTagNames(tagIDs); err2 != nil {
+				return nil, err2
+			}
+
+			var languageIDs []int64
+			if languageIDs, err2 = GetProjectLanguagesIDs(project.ID); err2 != nil {
+				return nil, err2
+			}
+
+			if project.Languages, err2 = GetLanguageNames(languageIDs); err2 != nil {
+				return nil, err2
+			}
+
+			projects = append(projects, project)
+
 		}
-		return projectIDs, nil
+		return projects, nil
 	}
 }
 

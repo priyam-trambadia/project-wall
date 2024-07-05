@@ -1,6 +1,8 @@
 package models
 
 import (
+	"errors"
+	"strings"
 	"time"
 )
 
@@ -24,22 +26,28 @@ func (user *User) Insert() error {
 			name, 
 			email, 
 			password, 
-			bio, 
-			social_links, 
-			location_id, 
 			organization_id
 		)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id;
 	`
+
+	parts := strings.Split(user.Email, "@")
+	if len := len(parts); len < 2 {
+		return errors.New("invalid email format")
+	} else {
+		hostname := parts[len-1]
+
+		var err error
+		if user.OrganizationID, err = GetOrCreateOrganizationID(hostname); err != nil {
+			return err
+		}
+	}
 
 	args := []interface{}{
 		user.Name,
 		user.Email,
 		user.Password,
-		user.Bio,
-		user.SocialLinks,
-		user.LocationID,
 		user.OrganizationID,
 	}
 

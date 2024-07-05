@@ -20,7 +20,7 @@ func (organization *Organization) Delete() {}
 
 // utilities
 
-func GetOrganizationID(hostname string) (int64, error) {
+func GetOrCreateOrganizationID(hostname string) (int64, error) {
 	query := `
 		SELECT id
 		FROM organizations
@@ -28,7 +28,14 @@ func GetOrganizationID(hostname string) (int64, error) {
 	`
 	var id int64
 	if err := database.QueryRow(query, hostname).Scan(&id); err != nil {
-		return 0, err
+		if err == ErrRecordNotFound {
+			organization := Organization{Hostname: hostname}
+			if err := organization.Insert(); err != nil {
+				return 0, err
+			} else {
+				return organization.ID, nil
+			}
+		}
 	}
 
 	return id, nil
