@@ -6,11 +6,15 @@ import (
 	"time"
 )
 
+const (
+	ValEmptyToken string = "Empty | NULL"
+)
+
 var (
 	accessTokenSecret  []byte
-	accessTokenExpiry  time.Duration
+	AccessTokenExpiry  time.Duration
 	refreshTokenSecret []byte
-	refreshTokenExpiry time.Duration
+	RefreshTokenExpiry time.Duration
 )
 
 func LoadConfig() {
@@ -19,14 +23,14 @@ func LoadConfig() {
 
 	var err error
 
-	accessTokenExpiry, err = time.ParseDuration(os.Getenv("ACCESS_TOKEN_EXPIRY"))
+	AccessTokenExpiry, err = time.ParseDuration(os.Getenv("ACCESS_TOKEN_EXPIRY"))
 	if err != nil {
-		log.Fatalln("[-] JWT error in parsing of Access Token Expiry")
+		log.Fatalln("[-] Error in JWT LoadConfig | parsing of Access Token Expiry.\n", err)
 	}
 
-	refreshTokenExpiry, err = time.ParseDuration(os.Getenv("REFRESH_TOKEN_EXPIRY"))
+	RefreshTokenExpiry, err = time.ParseDuration(os.Getenv("REFRESH_TOKEN_EXPIRY"))
 	if err != nil {
-		log.Fatalln("[-] JWT error in parsing of Refresh Token Expiry")
+		log.Fatalln("[-] Error in JWT LoadConfig | parsing of Refresh Token Expiry.\n", err)
 	}
 
 	log.Println("[+] JWT configuration load successful")
