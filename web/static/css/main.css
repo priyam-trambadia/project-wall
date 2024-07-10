@@ -1,0 +1,463 @@
+:root {
+  --charcoal: #264653ff;
+  --persian-green: #2a9d8fff;
+  --saffron: #e9c46aff;
+  --sandy-brown: #f4a261ff;
+  --burnt-sienna: #e76f51ff;
+}
+
+html {
+  font-size: 18px;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #26465308;
+}
+
+ul {
+  list-style: none;
+}
+
+.avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+}
+
+.clickable-span {
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #666;
+  background-color: var(--saffron);
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.clickable-span:hover {
+  font-size: 1rem;
+  color: #000;
+}
+
+.span-list {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+}
+
+.span-list li {
+  margin-left: 5px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+input,
+textarea {
+  padding: 8px 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+textarea {
+  resize: none;
+  height: 100px;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #000;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--saffron);
+}
+
+button {
+  background-color: var(--persian-green);
+  color: #fff;
+  border: 0;
+  border-radius: 3px;
+  padding: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.material-icons {
+  cursor: pointer;
+  color: var(--persian-green);
+  font-size: 36px;
+}
+
+
+nav {
+  background-color: var(--charcoal);
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10vw;
+  margin: 0;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+#nav-left,
+#nav-right {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+nav li {
+  margin: 0 10px;
+}
+
+nav li a {
+  color: #ccc;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+nav li a:hover {
+  color: #fff;
+}
+
+nav .avatar img {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  border: 3px solid var(--charcoal);
+
+}
+
+nav .avatar img:hover {
+  border-color: var(--sandy-brown);
+}
+
+
+#menu-home a {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+footer {
+  background-color: var(--charcoal);
+  color: #fff;
+  font-weight: 500;
+  padding: 12px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+footer a {
+  font-size: 1.1rem;
+  color: var(--sandy-brown);
+  margin: 0 10px;
+  text-decoration: none;
+}
+
+footer a:hover {
+  border-bottom: 1px solid #fff;
+}
+
+
+/*
+  ------
+  --- HOME PAGE CSS --->
+  ------
+*/
+
+#content {
+  flex-grow: 1;
+  display: flex;
+  padding: 0 10vw;
+}
+
+#main {
+  flex-grow: 1;
+  padding-right: 20px;
+}
+
+#sidebar {
+  min-width: 300px;
+  padding-left: 20px;
+}
+
+#tab-list {
+  list-style: none;
+  display: flex;
+  padding: 0;
+  margin: 0 0 20px 0;
+}
+
+#tab-list .tab {
+  margin: 0 10px;
+  cursor: pointer;
+  padding: 10px 20px;
+  background-color: #2a9d8f;
+  color: #fff;
+  border-radius: 4px;
+}
+
+#tab-list .tab:hover {
+  background-color: #264653;
+}
+
+#project-search {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+#project-search div {
+  margin-right: 10px;
+}
+
+#project-search span {
+  padding: 0;
+}
+
+#sortby-dropdown select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+#project-search-bar {
+  flex: 1;
+}
+
+#nearby-only {
+  margin-right: 0;
+}
+
+#nearby-only span {
+  max-width: 36px;
+}
+
+#project-list {
+  margin-bottom: 20px;
+}
+
+.project-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-left: 5px solid #2a9d8f;
+}
+
+.project-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.project-description {
+  margin-bottom: 10px;
+}
+
+.project-tag-list,
+.project-language-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0;
+  margin-bottom: 12px;
+}
+
+
+
+.project-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-footer div {
+  margin: 5px;
+}
+
+.project-meta,
+.project-action {
+  display: flex;
+  align-items: center;
+}
+
+.project-date,
+.project-bookmark-count {
+  font-size: 0.8rem;
+  margin-right: 10px;
+}
+
+.project-bookmark-btn {
+  color: var(--persian-green);
+}
+
+.project-delete span {
+  color: var(--burnt-sienna);
+}
+
+.project-action .avatar {
+  border: 3px solid var(--persian-green);
+}
+
+.project-action .avatar:hover {
+  border-color: var(--burnt-sienna);
+}
+
+.side-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.search-selection-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.selected,
+.search-results {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0;
+  margin-bottom: 10px;
+}
+
+#add-project-fbtn {
+  position: fixed;
+  bottom: 10vh;
+  right: 10vw;
+}
+
+.floating-btn {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background-color: #2a9d8f;
+  color: #fff;
+}
+
+.floating-btn:hover {
+  background-color: #264653;
+}
+
+
+/* 
+  ------
+  --- LOGIN | REGISTER | ADD PROJECT PAGE CSS --->
+  ------
+*/
+#lp-content,
+#rp-content,
+#app-content {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#lp-main,
+#rp-main,
+#app-main {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 360px;
+  text-align: center;
+}
+
+#form-heading {
+  color: var(--charcoal);
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: block;
+}
+
+#lp-form label,
+#rp-form label,
+#app-form label {
+  color: #546e7a;
+  font-weight: 500;
+  font-size: 18px;
+  text-align: left;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+#lp-form button[type="submit"],
+#rp-form button[type="submit"],
+#app-form button[type="submit"] {
+  margin-top: 30px;
+}
+
+
+#form-footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.form-footer-link {
+  margin-top: 15px;
+  text-decoration: none;
+  color: #546e7a;
+  font-size: 16px;
+  padding: 2px;
+}
+
+
+/* 
+  ------
+  --- REGISTER PAGE CSS --->
+  ------
+*/
+
+#rp-main #form-footer {
+  justify-content: center;
+}
+
+#rp-main #form-footer span {
+  margin-top: 15px;
+  text-decoration: none;
+  color: #bdbdbd;
+  font-size: 16px;
+  padding: 2px;
+}
+
+/* 
+  ------
+  --- ADD PROJECT PAGE CSS --->
+  ------
+*/
+
+#app-content {
+  justify-content: space-evenly;
+}
+
+#app-main {
+  max-width: 700px;
+  width: 70%;
+  margin: 30px;
+  padding: 50px 80px;
+}

@@ -22,7 +22,7 @@ if (addProjectFloatingButton !== null) {
             let info = new Object()
             info["title"] = data["name"]
             info["description"] = data["description"]
-            info["github_link"] = data["html_url"]
+            info["github_url"] = data["html_url"]
 
             return fetchData(data["languages_url"])
               .then((language_data) => {
@@ -87,7 +87,7 @@ function fetchErrorAlert() {
 }
 
 function makeRequestAddProject(json_payload) {
-  const request_url = document.location.origin + "/project/add"
+  const request_url = document.location.origin + "/project/create"
 
   const form = document.createElement('form');
   form.method = 'GET';
