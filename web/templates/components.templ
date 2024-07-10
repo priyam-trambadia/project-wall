@@ -1,0 +1,58 @@
+package templates
+
+import "fmt"
+
+templ commonAssetsLoadEarly() {
+	<link
+		href="https://fonts.googleapis.com/icon?family=Material+Icons"
+		rel="stylesheet"
+	/>
+	<script src="/static/js/vendor/htmx.mini.js"></script>
+	<link href="/static/css/main.css" rel="stylesheet"/>
+}
+
+templ commonAssetsLoadLater() {
+	<script src="/static/js/app.js"></script>
+}
+
+templ nav(isLogin bool, userID int64) {
+	<nav>
+		<ul id="nav-left">
+			<li id="menu-home">
+				<a href="/">ProjectWall</a>
+			</li>
+		</ul>
+		<ul id="nav-right">
+			if isLogin {
+				<li id="menu-logout">
+					<a href="/user/logout">Logout</a>
+				</li>
+				<li id="menu-user">
+					<a class="avatar" href={ templ.URL(fmt.Sprintf("/user/%d", userID)) }>
+						<img src="/static/img/default_avatar.jpg"/>
+					</a>
+				</li>
+			} else {
+				<li id="menu-login">
+					<a href="/user/login">Login</a>
+				</li>
+				<li id="menu-register">
+					<a href="/user/register">Register</a>
+				</li>
+			}
+		</ul>
+	</nav>
+}
+
+templ footer() {
+	<footer>
+		Copyright &copy; 2024 
+		<a href="">Priyamkumar Trambadia</a>
+	</footer>
+}
+
+templ ClickableSpanLi(id int64, data string) {
+	<li>
+		<span data-id={ fmt.Sprintf("%d", id) } class="clickable-span">{ data } </span>
+	</li>
+}

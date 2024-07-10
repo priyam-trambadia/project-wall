@@ -4,32 +4,45 @@ templ RegisterPage() {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Register Page</title>
+			<title>Register | ProjectWall</title>
 			@commonAssetsLoadEarly()
 		</head>
 		<body>
-			@nav(false)
-			@registerForm()
+			@nav(false, 0)
+			@rpContent()
 			@footer()
 			@commonAssetsLoadLater()
 		</body>
 	</html>
 }
 
-templ registerForm() {
-	<div class="">
-		<h1>Register</h1>
-		<form action="/user/register" method="post">
-			<label for="name">Fullname:</label>
-			<input type="text" id="name" name="name" required/>
-			<label for="email">E-mail:</label>
-			<input type="email" id="email" name="email" required/>
-			<label for="password">Password:</label>
-			<input type="password" id="password" name="password" required/>
-			<button type="submit">Register</button>
-		</form>
-		<a href="/user/login">Login</a>
+templ rpContent() {
+	<div id="rp-content">
+		@rpMain()
 	</div>
+}
+
+templ rpMain() {
+	<div id="rp-main">
+		<span id="form-heading">Register</span>
+		@rpForm()
+		<div id="form-footer">
+			<span>
+				Have an account?
+				<a class="form-footer-link" href="/user/login">Login</a>
+			</span>
+		</div>
+	</div>
+}
+
+templ rpForm() {
+	<form id="rp-form" action="/user/register" method="post">
+		<label for="name">Fullname</label>
+		<input type="text" id="name" name="name" required/>
+		<label for="email">E-mail</label>
+		<input type="email" id="email" name="email" required/>
+		<label for="password">Password</label>
+		<input type="password" id="password" name="password" required/>
+		<button type="submit">Register</button>
+	</form>
 }

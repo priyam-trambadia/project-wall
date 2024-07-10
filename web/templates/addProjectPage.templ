@@ -1,61 +1,72 @@
 package templates
 
-import (
-	"github.com/priyam-trambadia/project-wall/internal/models"
-)
+import "github.com/priyam-trambadia/project-wall/internal/models"
 
-templ AddProjectPage(project models.Project, languageJSON string) {
+templ AddProjectPage(isLogin bool, userID int64, project models.Project, languageJSON string) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
-			<title>Document</title>
+			<title>Add Project | ProjectWall</title>
 			@commonAssetsLoadEarly()
 		</head>
 		<body>
-			@projectForm(project, languageJSON)
+			@nav(isLogin, userID)
+			@appContent(project, languageJSON)
+			@footer()
 			@commonAssetsLoadLater()
 		</body>
 	</html>
 }
 
-templ projectForm(project models.Project, languageJSON string) {
-	<form action="/project/add" method="post">
-		<label for="github_link">Github Link:</label>
-		<input type="url" id="github_link" name="github_link" value={ project.GithubLink } disabled required/>
-		<br/>
-		<label for="title">Title:</label>
+templ appContent(project models.Project, languageJSON string) {
+	<div id="app-content">
+		@appMain(project, languageJSON)
+	</div>
+}
+
+templ appMain(project models.Project, languageJSON string) {
+	<div id="app-main">
+		<span id="form-heading">Add New Project</span>
+		@appForm(project, languageJSON)
+	</div>
+}
+
+templ appForm(project models.Project, languageJSON string) {
+	<form id="app-form" action="/project/create" method="post">
+		<label for="github_url">Github URL</label>
+		<input type="url" id="github_url" name="github_url" value={ project.GithubURL } disabled required/>
+		<label for="title">Title</label>
 		<input type="text" id="title" name="title" value={ project.Title } disabled required/>
-		<br/>
-		<label for="description">description:</label>
+		<label for="description">Description</label>
 		<textarea id="description" name="description" rows="4" cols="50" required>
 			{ project.Description }
 		</textarea>
-		<br/>
 		@projectFormLanguageSection(project.Languages, languageJSON)
-		<br/>
 		@projectFormTagSection()
 		<button type="submit">Add</button>
 	</form>
 }
 
 templ projectFormLanguageSection(languages []string, languageJSON string) {
+	<label for="languages">Languages</label>
 	<input type="hidden" name="languages" value={ languageJSON }/>
-	for _, language := range languages {
-		<span>{ language }</span>
-	}
+	<ul class="span-list">
+		for _, language := range languages {
+			@ClickableSpanLi(0, language)
+		}
+	</ul>
 }
 
 templ projectFormTagSection() {
+	<label for="tags">Tags</label>
 	<input
 		type="search"
-		name="search"
+		name="tag-search"
 		placeholder="Search for a tag..."
 		hx-get="/project/tag/search"
 		hx-trigger="input changed delay:500ms, search"
 		hx-target="next .search-results"
 	/>
-	<button type="button">prev</button>
-	<button type="button">next</button>
 	<div id="tags" class="search-selection-container">
 		<div class="selected"></div>
 		<div class="search-results"></div>

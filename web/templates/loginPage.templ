@@ -4,30 +4,41 @@ templ LoginPage() {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
-			<meta charset="UTF-8"/>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-			<title>Login Page</title>
+			<title>Login | ProjectWall</title>
 			@commonAssetsLoadEarly()
 		</head>
 		<body>
-			@nav(false)
-			@loginForm()
+			@nav(false, 0)
+			@lpContent()
 			@footer()
 			@commonAssetsLoadLater()
 		</body>
 	</html>
 }
 
-templ loginForm() {
-	<div class="">
-		<h1>Login</h1>
-		<form action="/user/login" method="post">
-			<label for="email">E-mail:</label>
-			<input type="email" id="email" name="email" required/>
-			<label for="password">Password:</label>
-			<input type="password" id="password" name="password" required/>
-			<button type="submit">Login</button>
-		</form>
-		<a href="/user/register">Register</a>
+templ lpContent() {
+	<div id="lp-content">
+		@lpMain()
 	</div>
+}
+
+templ lpMain() {
+	<div id="lp-main">
+		<span id="form-heading">Login</span>
+		@lpForm()
+		<div id="form-footer">
+			<a class="form-footer-link" href="/user/password/reset">Forget Password?</a>
+			<a class="form-footer-link" href="/user/register">Register</a>
+		</div>
+	</div>
+}
+
+templ lpForm() {
+	<form id="lp-form" action="/user/login" method="post">
+		<label for="email">E-mail</label>
+		<input type="email" id="email" name="email" required/>
+		<label for="password">Password</label>
+		<input type="password" id="password" name="password" required/>
+		<button type="submit">Login</button>
+	</form>
 }

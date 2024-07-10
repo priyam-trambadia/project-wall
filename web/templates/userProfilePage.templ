@@ -1,0 +1,29 @@
+package templates
+
+import (
+	"github.com/priyam-trambadia/project-wall/internal/models"
+	)
+
+templ UserProfilePage(isLogin bool, userID int64, user models.User) {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<title>{ user.Name } - ProjectWall</title>
+			@commonAssetsLoadEarly()
+		</head>
+		<body>
+			@nav(isLogin, userID)
+			<div id="user-profile-card">
+				<img id="user-avatar" src={ user.Avatar }/>
+				<span id="user-name">{ user.Name } </span>
+				<span id="user-email">{ user.Email }</span>
+
+				if userID == user.ID {
+						<button hx-delete="">Delete Account</button>
+				}
+			</div>
+			@footer()
+			@commonAssetsLoadLater()
+		</body>
+	</html>
+}
