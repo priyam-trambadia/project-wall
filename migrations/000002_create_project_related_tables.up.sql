@@ -1,31 +1,38 @@
 CREATE TABLE IF NOT EXISTS projects (
   id BIGSERIAL PRIMARY KEY,
-  github_link varchar(255) NOT NULL,
-  title varchar(255) NOT NULL,
-  description text NOT NULL,
+  github_url TEXT UNIQUE NOT NULL,
+  title VARCHAR(255) UNIQUE NOT NULL,
+  description TEXT NOT NULL,
   owner_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  last_synced_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  bookmark_count BIGINT NOT NULL DEFAULT 0
+  created_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS tags (
   id BIGSERIAL PRIMARY KEY,
-  name varchar(255) NOT NULL
+  name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS project_tags (
   project_id BIGINT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-  tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE
+  tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+  PRIMARY KEY (project_id, tag_id)
 );
 
 CREATE TABLE IF NOT EXISTS languages (
   id BIGSERIAL PRIMARY KEY,
-  name varchar(255) NOT NULL
+  name VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS project_languages (
   project_id BIGINT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
-  language_id BIGINT NOT NULL REFERENCES languages(id) ON DELETE CASCADE
+  language_id BIGINT NOT NULL REFERENCES languages(id) ON DELETE CASCADE,
+  PRIMARY KEY (project_id, language_id)
+);
+
+CREATE TABLE IF NOT EXISTS project_bookmarks (
+  project_id BIGINT NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  created_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (project_id, user_id)
 );
