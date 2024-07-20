@@ -17,28 +17,28 @@ templ LoginPage() {
 }
 
 templ lpContent() {
-	<div id="lp-content">
+	<div id="lp-content" class="common-content">
 		@lpMain()
 	</div>
 }
 
 templ lpMain() {
-	<div id="lp-main">
+	<div id="lp-main" class="common-main">
 		<span id="form-heading">Login</span>
 		@lpForm()
 		<div id="form-footer">
-			<a class="form-footer-link" href="/user/password/reset">Forget Password?</a>
+			<a class="form-footer-link" href="/user/forgot-password">Forget Password?</a>
 			<a class="form-footer-link" href="/user/register">Register</a>
 		</div>
 	</div>
 }
 
 templ lpForm() {
-	<form id="lp-form" action="/user/login" method="post">
+	<form id="lp-form" class="common-form" action="/user/login" method="post">
 		<label for="email">E-mail</label>
-		<input type="email" id="email" name="email" required/>
+		<input type="email" id="email" name="email" autocomplete="on" required/>
 		<label for="password">Password</label>
-		<input type="password" id="password" name="password" required/>
+		<input type="password" id="password" name="password" autocomplete="on" required/>
 		<button type="submit">Login</button>
 	</form>
 }

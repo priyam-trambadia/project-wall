@@ -8,9 +8,13 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-import "github.com/priyam-trambadia/project-wall/internal/models"
+import (
+	"encoding/json"
+	"github.com/priyam-trambadia/project-wall/internal/models"
+	"log"
+)
 
-func AddProjectPage(isLogin bool, userID int64, project models.Project, languageJSON string) templ.Component {
+func AddProjectPage(isLogin bool, userID int64, project models.Project) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -44,7 +48,7 @@ func AddProjectPage(isLogin bool, userID int64, project models.Project, language
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = appContent(project, languageJSON).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = appContent(project).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -64,7 +68,7 @@ func AddProjectPage(isLogin bool, userID int64, project models.Project, language
 	})
 }
 
-func appContent(project models.Project, languageJSON string) templ.Component {
+func appContent(project models.Project) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -82,11 +86,11 @@ func appContent(project models.Project, languageJSON string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"app-content\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"app-content\" class=\"common-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = appMain(project, languageJSON).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = appMain(project).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -98,7 +102,7 @@ func appContent(project models.Project, languageJSON string) templ.Component {
 	})
 }
 
-func appMain(project models.Project, languageJSON string) templ.Component {
+func appMain(project models.Project) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -116,11 +120,11 @@ func appMain(project models.Project, languageJSON string) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"app-main\"><span id=\"form-heading\">Add New Project</span>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"app-main\" class=\"common-main\"><span id=\"form-heading\">Add New Project</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = appForm(project, languageJSON).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = appForm(project).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -132,7 +136,7 @@ func appMain(project models.Project, languageJSON string) templ.Component {
 	})
 }
 
-func appForm(project models.Project, languageJSON string) templ.Component {
+func appForm(project models.Project) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -150,40 +154,40 @@ func appForm(project models.Project, languageJSON string) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"app-form\" action=\"/project/create\" method=\"post\"><label for=\"github_url\">Github URL</label> <input type=\"url\" id=\"github_url\" name=\"github_url\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"app-form\" class=\"common-form\" action=\"/project/create\" method=\"post\"><label for=\"github_url\">Github URL</label> <input type=\"url\" id=\"github_url\" name=\"github_url\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
 		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(project.GithubURL)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `addProjectPage.templ`, Line: 37, Col: 79}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `addProjectPage.templ`, Line: 41, Col: 79}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" disabled required> <label for=\"title\">Title</label> <input type=\"text\" id=\"title\" name=\"title\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" readonly required> <label for=\"title\">Title</label> <input type=\"text\" id=\"title\" name=\"title\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(project.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `addProjectPage.templ`, Line: 39, Col: 66}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `addProjectPage.templ`, Line: 43, Col: 66}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" disabled required> <label for=\"description\">Description</label> <textarea id=\"description\" name=\"description\" rows=\"4\" cols=\"50\" required>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" readonly required> <label for=\"description\">Description</label> <textarea id=\"description\" name=\"description\" rows=\"4\" cols=\"50\" required>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(project.Description)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `addProjectPage.templ`, Line: 42, Col: 24}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `addProjectPage.templ`, Line: 46, Col: 24}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -193,7 +197,7 @@ func appForm(project models.Project, languageJSON string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = projectFormLanguageSection(project.Languages, languageJSON).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = projectFormLanguageSection(project.Languages).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -209,7 +213,16 @@ func appForm(project models.Project, languageJSON string) templ.Component {
 	})
 }
 
-func projectFormLanguageSection(languages []string, languageJSON string) templ.Component {
+func languageArrayToJSONString(languages []models.Language) string {
+	lang, err := json.Marshal(languages)
+	if err != nil {
+		log.Println("[-] Error in languageArrayToJSONString templates | converstion of []models.Language to JSON")
+		return "[]"
+	}
+	return string(lang)
+}
+
+func projectFormLanguageSection(languages []models.Language) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -227,30 +240,30 @@ func projectFormLanguageSection(languages []string, languageJSON string) templ.C
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"languages\">Languages</label> <input type=\"hidden\" name=\"languages\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"languages\">Languages</label> <input type=\"hidden\" id=\"languages\" name=\"languages\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var9 string
-		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(languageJSON)
+		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(languageArrayToJSONString(languages))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `addProjectPage.templ`, Line: 52, Col: 59}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `addProjectPage.templ`, Line: 65, Col: 98}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><ul class=\"span-list\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div id=\"languages\" class=\"search-selection-container\"><ul class=\"span-list\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, language := range languages {
-			templ_7745c5c3_Err = ClickableSpanLi(0, language).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = ClickableSpanLi(language.ID, language.Name).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -276,7 +289,7 @@ func projectFormTagSection() templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"tags\">Tags</label> <input type=\"search\" name=\"tag-search\" placeholder=\"Search for a tag...\" hx-get=\"/project/tag/search\" hx-trigger=\"input changed delay:500ms, search\" hx-target=\"next .search-results\"><div id=\"tags\" class=\"search-selection-container\"><div class=\"selected\"></div><div class=\"search-results\"></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"tags\">Tags</label> <input type=\"hidden\" id=\"tags\" name=\"tags\" value=\"[]\"> <input type=\"search\" name=\"tag-search\" placeholder=\"Search for a tag...\" hx-get=\"/project/tag/search\" hx-trigger=\"input changed delay:500ms, search\" hx-target=\"next .search-results\" hx-vals=\"{&#34;include_same_tag_if_not_exists&#34;: &#34;true&#34;}\"><div id=\"tags\" class=\"search-selection-container\"><ul class=\"selected span-list\"></ul><ul class=\"search-results span-list\"></ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

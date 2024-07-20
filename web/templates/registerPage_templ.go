@@ -80,7 +80,7 @@ func rpContent() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"rp-content\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"rp-content\" class=\"common-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -114,7 +114,7 @@ func rpMain() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"rp-main\"><span id=\"form-heading\">Register</span>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"rp-main\" class=\"common-main\"><span id=\"form-heading\">Register</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -148,7 +148,7 @@ func rpForm() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"rp-form\" action=\"/user/register\" method=\"post\"><label for=\"name\">Fullname</label> <input type=\"text\" id=\"name\" name=\"name\" required> <label for=\"email\">E-mail</label> <input type=\"email\" id=\"email\" name=\"email\" required> <label for=\"password\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" required> <button type=\"submit\">Register</button></form>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"rp-form\" class=\"common-form\" action=\"/user/register\" method=\"post\"><label for=\"name\">Fullname</label> <input type=\"text\" id=\"name\" name=\"name\" autocomplete=\"on\" required> <label for=\"email\">E-mail</label> <input type=\"email\" id=\"email\" name=\"email\" autocomplete=\"on\" required> <label for=\"password\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" autocomplete=\"on\" required> <button type=\"submit\">Register</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

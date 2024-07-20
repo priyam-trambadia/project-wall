@@ -1,29 +1,48 @@
 package templates
 
-import (
-	"github.com/priyam-trambadia/project-wall/internal/models"
-	)
+import "github.com/priyam-trambadia/project-wall/internal/models"
 
 templ UserProfilePage(isLogin bool, userID int64, user models.User) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
-			<title>{ user.Name } - ProjectWall</title>
+			<title>{ user.Name } | ProjectWall</title>
 			@commonAssetsLoadEarly()
 		</head>
 		<body>
 			@nav(isLogin, userID)
-			<div id="user-profile-card">
-				<img id="user-avatar" src={ user.Avatar }/>
-				<span id="user-name">{ user.Name } </span>
-				<span id="user-email">{ user.Email }</span>
-
-				if userID == user.ID {
-						<button hx-delete="">Delete Account</button>
-				}
-			</div>
+			@uppContent(isLogin, userID, user)
 			@footer()
 			@commonAssetsLoadLater()
 		</body>
 	</html>
+}
+
+templ uppContent(isLogin bool, userID int64, user models.User) {
+	<div id="upp-content" class="common-content">
+		@uppMain(isLogin, userID, user)
+	</div>
+}
+
+templ uppMain(isLogin bool, userID int64, user models.User) {
+	<div id="upp-main" class="common-main">
+		@uppCard(isLogin, userID, user)
+	</div>
+}
+
+templ uppCard(isLogin bool, userID int64, user models.User) {
+	<div id="user-profile-card">
+		<div id="user-data">
+			<img id="user-avatar" src={ user.Avatar }/>
+			<div id="user-info">
+				<span id="user-name">{ user.Name } </span>
+				<span id="user-email">{ user.Email }</span>
+			</div>
+		</div>
+		if isLogin && userID == user.ID {
+			<button id="user-delete-btn" class="user-btn" hx-delete="">Delete Account</button>
+		} else {
+			<button id="copy-email-btn" class="user-btn">Copy Email</button>
+		}
+	</div>
 }

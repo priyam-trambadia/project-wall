@@ -80,7 +80,7 @@ func lpContent() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"lp-content\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"lp-content\" class=\"common-content\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -114,7 +114,7 @@ func lpMain() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"lp-main\"><span id=\"form-heading\">Login</span>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"lp-main\" class=\"common-main\"><span id=\"form-heading\">Login</span>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -122,7 +122,7 @@ func lpMain() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"form-footer\"><a class=\"form-footer-link\" href=\"/user/password/reset\">Forget Password?</a> <a class=\"form-footer-link\" href=\"/user/register\">Register</a></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"form-footer\"><a class=\"form-footer-link\" href=\"/user/forgot-password\">Forget Password?</a> <a class=\"form-footer-link\" href=\"/user/register\">Register</a></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -148,7 +148,7 @@ func lpForm() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"lp-form\" action=\"/user/login\" method=\"post\"><label for=\"email\">E-mail</label> <input type=\"email\" id=\"email\" name=\"email\" required> <label for=\"password\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" required> <button type=\"submit\">Login</button></form>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<form id=\"lp-form\" class=\"common-form\" action=\"/user/login\" method=\"post\"><label for=\"email\">E-mail</label> <input type=\"email\" id=\"email\" name=\"email\" autocomplete=\"on\" required> <label for=\"password\">Password</label> <input type=\"password\" id=\"password\" name=\"password\" autocomplete=\"on\" required> <button type=\"submit\">Login</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

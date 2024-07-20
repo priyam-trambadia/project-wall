@@ -1,11 +1,8 @@
 package templates
 
-import (
-	"fmt"
-	"github.com/priyam-trambadia/project-wall/internal/models"
-)
+import "github.com/priyam-trambadia/project-wall/internal/models"
 
-templ HomePage(isLogin bool, userID int64, projects []models.Project) {
+templ HomePage(isLogin bool, userID int64, projects []models.Project, tags []models.Tag, languages []models.Language) {
 	<!DOCTYPE html>
 	<head>
 		<title>ProjectWall</title>
@@ -13,64 +10,57 @@ templ HomePage(isLogin bool, userID int64, projects []models.Project) {
 	</head>
 	<body>
 		@nav(isLogin, userID)
-		@content(isLogin, userID, projects)
+		@content(isLogin, userID, projects, tags, languages)
 		@floatingButtonAddProject()
 		@footer()
 		@commonAssetsLoadLater()
 	</body>
 }
 
-templ content(isLogin bool, userID int64, projects []models.Project) {
+templ content(isLogin bool, userID int64, projects []models.Project, tags []models.Tag, languages []models.Language) {
 	<div id="content">
 		@main(isLogin, userID, projects)
-		@side()
+		@side(tags, languages)
 	</div>
 }
 
 templ main(isLogin bool, userID int64, projects []models.Project) {
 	<div id="main">
-		@projectSearch()
+		@projectSearchSection()
 		@projectListTabs(isLogin)
 		@projectList(userID, projects)
 	</div>
 }
 
-templ projectSearch() {
-	<div id="project-search">
-		<div id="sortby-dropdown">
-			<select>
-				<option value="">--- Sort By ---</option>
-				<option value="date">Date</option>
-				<option value="bookmarks">Bookmarks</option>
-			</select>
-		</div>
-		<div id="project-search-bar">
-			<input
-				type="search"
-				name="project-search"
-				placeholder="Search for a project..."
-				hx-get="/project/search"
-				hx-trigger="input changed delay:500ms, search"
-			/>
-		</div>
-		<div id="sort-direction">
-			<span class="material-icons">swap_vert</span>
-		</div>
-		<div id="organization-only">
-			<span class="material-icons">domain</span>
-		</div>
-		<div id="nearby-only">
-			<span class="material-icons">explore_nearby</span>
-		</div>
-	</div>
+templ projectSearchSection() {
+	<form id="project-search-section" action="/project/search" method="GET">
+		<select id="sort-by" name="sort-by">
+			<option value="">--- Sort By ---</option>
+			<option value="date">Date</option>
+			<option value="bookmark">Bookmark</option>
+		</select>
+		<input
+			id="project-search"
+			type="search"
+			name="project-search"
+			placeholder="Search for a project..."
+		/>
+		<span id="sort-direction" class="material-icons" data-tooltip="Sort Direction">swap_vert</span>
+		<input type="hidden" name="sort-direction" value="desc"/>
+		<span id="organization-only" class="material-icons" data-tooltip="Organization Only">domain</span>
+		<input type="hidden" name="organization-only" value="false"/>
+		<input type="hidden" name="tags" value="[]"/>
+		<input type="hidden" name="languages" value="[]"/>
+		<input type="hidden" name="tab"/>
+	</form>
 }
 
 templ projectListTabs(isLogin bool) {
 	<div id="tab-list">
-		<button id="explore" class="tab selected">Exploar</button>
 		if isLogin {
-			<button id="my-bookmarks" class="tab">My Bookmarks</button>
-			<button id="my-projects" class="tab">My Projects</button>
+			<button id="explore" class="tab selected">Exploar</button>
+			<button id="my_bookmarks" class="tab">My Bookmarks</button>
+			<button id="my_projects" class="tab">My Projects</button>
 		}
 	</div>
 }
@@ -78,95 +68,59 @@ templ projectListTabs(isLogin bool) {
 templ projectList(userID int64, projects []models.Project) {
 	<div id="project-list">
 		for _, project := range projects {
-			@projectCard(userID, project)
+			@ProjectCard(userID, project)
 		}
 	</div>
 }
 
-templ projectCard(userID int64, project models.Project) {
-	<div class="project-card" data-project-id={ fmt.Sprintf("%d", project.ID) }>
-		<div class="project-title">{ project.Title }</div>
-		<div class="project-description">{ project.Description }</div>
-		<ul class="project-tag-list span-list">
-			for _, tag := range project.Tags {
-				@ClickableSpanLi(0, tag)
-			}
-		</ul>
-		<ul class="project-language-list span-list">
-			for _, language := range project.Languages {
-				@ClickableSpanLi(0, language)
-			}
-		</ul>
-		<div class="project-footer">
-			<div class="project-meta">
-				<div class="project-date">
-					<span>
-						{ project.CreatedAt.Format("02 Jan 2006") }
-					</span>
-				</div>
-				<div class="project-bookmark-count">
-					<span>123</span>
-					<span>Bookmarks</span>
-				</div>
-			</div>
-			<div class="project-action">
-				<div class="project-bookmark-toggle">
-					<span class=" material-icons">bookmark_border</span>
-				</div>
-				if userID == project.OwnerID {
-					<div class="project-delete">
-						<span class="material-icons">delete_forever</span>
-					</div>
-				} else {
-					<div class="project-owner-profile">
-						<a href={ templ.URL(fmt.Sprintf("/user/%d", project.OwnerID)) }>
-							<img class="avatar" src="/static/img/default_avatar.jpg"/>
-						</a>
-					</div>
-				}
-			</div>
-		</div>
-	</div>
-}
-
-templ side() {
+templ side(tags []models.Tag, languages []models.Language) {
 	<div id="sidebar">
 		@sideCard(
 			"Trending Tags",
 			"tag-search",
 			"Search for a tag...",
 			"/project/tag/search",
-		)
+			"tags",
+		) {
+			for _, tag := range tags {
+				@ClickableSpanLi(tag.ID, tag.Name)
+			}
+		}
 		@sideCard(
 			"Trending Languages",
 			"language-search",
 			"Search for a language...",
 			"/project/language/search",
-		)
+			"languages",
+		) {
+			for _, language := range languages {
+				@ClickableSpanLi(language.ID, language.Name)
+			}
+		}
 	</div>
 }
 
-templ sideCard(title, name, placholder, target string) {
+templ sideCard(title, name, placholder, target string, id string) {
 	<div class="side-card">
-		<h3>{ title }</h3>
+		<span class="side-card-title">{ title }</span>
 		<input
 			type="search"
 			name={ name }
 			placeholder={ placholder }
 			hx-get={ target }
-			hx-trigger="input changed delay:500ms, search"
+			hx-trigger="input changed delay:500ms, search, load"
 			hx-target="next .search-results"
 			hx-vals='{"include_same_tag_if_not_exists": "false"}'
 		/>
-		<div class="search-selection-container">
+		<div id={ id } class="search-selection-container">
 			<ul class="selected span-list"></ul>
-			<ul class="search-results span-list"></ul>
+			<ul class="search-results span-list">
+				{ children... }
+			</ul>
 		</div>
 	</div>
 }
 
 templ floatingButtonAddProject() {
-	<div id="add-project-fbtn">
-		<button class="floating-btn material-icons">add</button>
-	</div>
+	<button id="add-project-fbtn" class="floating-btn material-icons">add</button>
 }

@@ -1,8 +1,12 @@
 package templates
 
-import "github.com/priyam-trambadia/project-wall/internal/models"
+import (
+	"encoding/json"
+	"github.com/priyam-trambadia/project-wall/internal/models"
+	"log"
+)
 
-templ AddProjectPage(isLogin bool, userID int64, project models.Project, languageJSON string) {
+templ AddProjectPage(isLogin bool, userID int64, project models.Project) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -11,54 +15,66 @@ templ AddProjectPage(isLogin bool, userID int64, project models.Project, languag
 		</head>
 		<body>
 			@nav(isLogin, userID)
-			@appContent(project, languageJSON)
+			@appContent(project)
 			@footer()
 			@commonAssetsLoadLater()
 		</body>
 	</html>
 }
 
-templ appContent(project models.Project, languageJSON string) {
-	<div id="app-content">
-		@appMain(project, languageJSON)
+templ appContent(project models.Project) {
+	<div id="app-content" class="common-content">
+		@appMain(project)
 	</div>
 }
 
-templ appMain(project models.Project, languageJSON string) {
-	<div id="app-main">
+templ appMain(project models.Project) {
+	<div id="app-main" class="common-main">
 		<span id="form-heading">Add New Project</span>
-		@appForm(project, languageJSON)
+		@appForm(project)
 	</div>
 }
 
-templ appForm(project models.Project, languageJSON string) {
-	<form id="app-form" action="/project/create" method="post">
+templ appForm(project models.Project) {
+	<form id="app-form" class="common-form" action="/project/create" method="post">
 		<label for="github_url">Github URL</label>
-		<input type="url" id="github_url" name="github_url" value={ project.GithubURL } disabled required/>
+		<input type="url" id="github_url" name="github_url" value={ project.GithubURL } readonly required/>
 		<label for="title">Title</label>
-		<input type="text" id="title" name="title" value={ project.Title } disabled required/>
+		<input type="text" id="title" name="title" value={ project.Title } readonly required/>
 		<label for="description">Description</label>
 		<textarea id="description" name="description" rows="4" cols="50" required>
 			{ project.Description }
 		</textarea>
-		@projectFormLanguageSection(project.Languages, languageJSON)
+		@projectFormLanguageSection(project.Languages)
 		@projectFormTagSection()
 		<button type="submit">Add</button>
 	</form>
 }
 
-templ projectFormLanguageSection(languages []string, languageJSON string) {
+func languageArrayToJSONString(languages []models.Language) string {
+	lang, err := json.Marshal(languages)
+	if err != nil {
+		log.Println("[-] Error in languageArrayToJSONString templates | converstion of []models.Language to JSON")
+		return "[]"
+	}
+	return string(lang)
+}
+
+templ projectFormLanguageSection(languages []models.Language) {
 	<label for="languages">Languages</label>
-	<input type="hidden" name="languages" value={ languageJSON }/>
-	<ul class="span-list">
-		for _, language := range languages {
-			@ClickableSpanLi(0, language)
-		}
-	</ul>
+	<input type="hidden" id="languages" name="languages" value={ languageArrayToJSONString(languages) }/>
+	<div id="languages" class="search-selection-container">
+		<ul class="span-list">
+			for _, language := range languages {
+				@ClickableSpanLi(language.ID, language.Name)
+			}
+		</ul>
+	</div>
 }
 
 templ projectFormTagSection() {
 	<label for="tags">Tags</label>
+	<input type="hidden" id="tags" name="tags" value="[]"/>
 	<input
 		type="search"
 		name="tag-search"
@@ -66,9 +82,10 @@ templ projectFormTagSection() {
 		hx-get="/project/tag/search"
 		hx-trigger="input changed delay:500ms, search"
 		hx-target="next .search-results"
+		hx-vals='{"include_same_tag_if_not_exists": "true"}'
 	/>
 	<div id="tags" class="search-selection-container">
-		<div class="selected"></div>
-		<div class="search-results"></div>
+		<ul class="selected span-list"></ul>
+		<ul class="search-results span-list"></ul>
 	</div>
 }
