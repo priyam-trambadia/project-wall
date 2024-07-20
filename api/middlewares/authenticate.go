@@ -2,49 +2,62 @@ package middlewares
 
 import (
 	"context"
-	"log"
 	"net/http"
 
-	"github.com/priyam-trambadia/project-wall/api/handlers"
 	"github.com/priyam-trambadia/project-wall/api/utils"
 	"github.com/priyam-trambadia/project-wall/api/utils/jwt"
+	"github.com/priyam-trambadia/project-wall/internal/logger"
+	"github.com/priyam-trambadia/project-wall/internal/models"
 )
 
 func Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+		logger := logger.Logger{Caller: "Authenticate middleware"}
+
 		var (
-			ctx            context.Context
-			isUserLoggedIn bool
-			userID         int64
-			ok             bool
+			userID         int64 = 0
+			isUserLoggedIn bool  = false
+			ok             bool  = false
+			err            error
 		)
 
-		accessTokenCookie, err := r.Cookie("access_token")
-		if err == nil {
-			userID, ok = jwt.ValidateAccessToken(accessTokenCookie.Value)
+		accessTokenCookie, _ := r.Cookie("access_token")
+
+		if accessTokenCookie != nil {
+			userID, ok, err = jwt.ValidateAccessToken(accessTokenCookie.Value)
+			if err != nil {
+				utils.RenderInternalServerErr(w)
+				logger.Fatalln(err)
+			}
 		}
 
-		if err != nil || !ok {
+		if ok {
+			isUserLoggedIn = true
+		} else {
 
-			refreshTokenCookie, err2 := r.Cookie("refresh_token")
-			if err2 == nil {
-				userID, ok = jwt.ValidateRefreshToken(refreshTokenCookie.Value)
+			refreshTokenCookie, _ := r.Cookie("refresh_token")
+			if refreshTokenCookie != nil {
+				userID, ok, err = jwt.ValidateRefreshToken(refreshTokenCookie.Value)
+				if err != nil {
+					utils.RenderInternalServerErr(w)
+					logger.Fatalln(err)
+				}
 			}
 
-			if err2 != nil || !ok {
-				isUserLoggedIn = false
-
-			} else {
+			if ok {
 				isUserLoggedIn = true
-				accessToken := jwt.GenerateAccessToken(userID)
+				var accessToken string
+				accessToken, err := jwt.GenerateAccessToken(userID)
+				if err != nil {
+					utils.RenderInternalServerErr(w)
+					logger.Fatalln(err)
+				}
 				utils.SetTokenCookie(w, accessToken, refreshTokenCookie.Value)
 			}
-
-		} else {
-			isUserLoggedIn = true
 		}
 
+		var ctx context.Context
 		ctx = context.WithValue(r.Context(), "is_user_logged_in", isUserLoggedIn)
 		ctx = context.WithValue(ctx, "user_id", userID)
 
@@ -52,19 +65,31 @@ func Authenticate(next http.Handler) http.Handler {
 	})
 }
 
-func AuthenticationRequired(next http.HandlerFunc) http.HandlerFunc {
+func UserAuthenticationRequired(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		logger := logger.Logger{Caller: "UserAuthenticationRequired middleware"}
+
 		ctx := r.Context()
-		isUserLoggedIn, ok := ctx.Value("is_user_logged_in").(bool)
+		isUserLoggedIn, _ := ctx.Value("is_user_logged_in").(bool)
 
-		if !ok {
-			log.Println("[-] Error in AuthenticationRequired type conversion.")
+		if !isUserLoggedIn {
+			utils.SetPopupCookie(w, "You need to be logged in to continue. Please log in or create an account.")
+			http.Redirect(w, r, "/user/login", http.StatusFound)
+			return
 		}
 
-		if !ok || !isUserLoggedIn {
-			handlers.UserLogin(w, r)
-		} else {
-			next.ServeHTTP(w, r)
+		userID, _ := ctx.Value("user_id").(int64)
+		exists, err := models.IsUserExists(userID)
+		if err != nil {
+			utils.RenderInternalServerErr(w)
+			logger.Fatalln(err)
 		}
+
+		if !exists {
+			utils.RenderSessionTemperedErr(w)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	}
 }

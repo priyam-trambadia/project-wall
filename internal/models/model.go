@@ -7,8 +7,7 @@ import (
 )
 
 var (
-	database *sql.DB
-
+	database          *sql.DB
 	ErrRecordNotFound = sql.ErrNoRows
 )
 
@@ -31,12 +30,7 @@ func ArraytoStringRoundBrackets(arr []int64) string {
 		str += fmt.Sprintf("%d,", ele)
 	}
 
-	strLen := len(str)
-	if str[strLen-1] == ',' {
-		str = str[:strLen-1]
-	}
-
-	str += ")"
+	str += "0)"
 
 	return str
 }
