@@ -1,4 +1,100 @@
+// data-tooltip handling
 
+const tooltip = document.createElement("span");
+tooltip.id = "tooltip";
+
+
+const body = document.body
+if (body !== null) {
+  body.addEventListener('pointerover', (event) => {
+    if (event.target.hasAttribute("data-tooltip")) {
+      tooltip.textContent = event.target.getAttribute("data-tooltip")
+      body.appendChild(tooltip);
+      positionTooltip(tooltip, event.target);
+    }
+  });
+
+  body.addEventListener('pointerout', (event) => {
+    if (event.target.hasAttribute("data-tooltip")) {
+      body.removeChild(tooltip);
+    }
+  });
+}
+
+function positionTooltip(tooltip, element) {
+
+  // Initial positioning below the element
+  tooltip.style.position = 'absolute';
+  tooltip.style.top = `${element.offsetTop + element.offsetHeight}px`;
+  tooltip.style.left = `${element.offsetLeft}px`;
+
+  // Check if the tooltip is fully visible
+  const tooltipRect = tooltip.getBoundingClientRect();
+  const windowHeight = window.innerHeight;
+  if (tooltipRect.bottom > windowHeight) {
+    // Reposition the tooltip above the element
+    tooltip.style.top = `${element.offsetTop - tooltip.offsetHeight}px`;
+  }
+}
+
+
+// popup handling
+
+function showPopup(message, duration = 3600) {
+  const popup = document.createElement("span");
+  popup.id = "popup"
+  body.appendChild(popup)
+  popup.textContent = message;
+
+  tenPart = duration / 10
+  setTimeout(() => {
+    dur1 = 3 * tenPart
+    op = 1.0 / dur1
+    for (let itr = 1; itr <= dur1; itr += 10) {
+      setTimeout(() => {
+        popup.style.opacity = (dur1 - itr) * op;
+      }, itr)
+    }
+  }, tenPart * 7);
+
+  setTimeout(() => {
+    popup.remove()
+  }, duration);
+}
+
+function getCookie(name) {
+  const cookieValue = `; `;
+  const parts = document.cookie.split(cookieValue);
+  for (let i = 0; i < parts.length; i++) {
+    const part = parts[i];
+    if (part.startsWith(name + '=')) {
+      return part.substring(name.length + 1);
+    }
+  }
+  return null;
+}
+
+function deleteCookie(name) {
+  document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+}
+
+const popupCookie = getCookie('popup');
+if (popupCookie) {
+  showPopup(popupCookie)
+  deleteCookie('popup')
+}
+
+
+// common function for fetch
+
+async function fetchData(url, method = "GET") {
+  const response = await fetch(url, { method: method });
+  if (response.ok) {
+    return response;
+  } else {
+    throw new Error(`API info failed with status ${response.status}`);
+  }
+}
 
 
 // Add Project Floating Button
@@ -6,7 +102,7 @@
 const addProjectFloatingButton = document.querySelector("#add-project-fbtn")
 if (addProjectFloatingButton !== null) {
   addProjectFloatingButton.addEventListener("click", () => {
-    const github_url = window.prompt("Enter project github URL")
+    const github_url = window.prompt("Enter Project Github URL")
 
     if (github_url !== null) {
       const info = extractOwnerAndRepo(github_url)
@@ -18,6 +114,9 @@ if (addProjectFloatingButton !== null) {
 
         // extaract repo info
         fetchData(repo_api_url)
+          .then(response => {
+            return response.json()
+          })
           .then((data) => {
             let info = new Object()
             info["title"] = data["name"]
@@ -25,18 +124,24 @@ if (addProjectFloatingButton !== null) {
             info["github_url"] = data["html_url"]
 
             return fetchData(data["languages_url"])
+              .then(response => {
+                return response.json()
+              })
               .then((language_data) => {
-                info["languages"] = Object.keys(language_data)
+                info["languages"] = Object.keys(language_data).map((name, index) => {
+                  return { id: 0, name };
+                });
                 return info
               })
-              .catch(() => {
-                throw new Error(`API github language fatching error`);
+              .catch((err) => {
+                throw err
               })
           })
           .then((repo_info) => {
             makeRequestAddProject(repo_info)
           })
-          .catch(() => {
+          .catch((err) => {
+            console.log(err)
             fetchErrorAlert()
           })
 
@@ -65,21 +170,7 @@ function extractOwnerAndRepo(url) {
 }
 
 function invalidURLAlert() {
-  window.alert("Invalid github URL!")
-}
-
-async function fetchData(url) {
-  try {
-    const response = await fetch(url);
-    if (response.ok) {
-      const data = await response.json();
-      return data;
-    } else {
-      throw new Error(`API info failed with status ${response.status}`);
-    }
-  } catch (error) {
-    fetchErrorAlert()
-  }
+  window.alert("Invalid Github URL!")
 }
 
 function fetchErrorAlert() {
@@ -87,7 +178,7 @@ function fetchErrorAlert() {
 }
 
 function makeRequestAddProject(json_payload) {
-  const request_url = document.location.origin + "/project/create"
+  const request_url = "/project/create"
 
   const form = document.createElement('form');
   form.method = 'GET';
@@ -95,7 +186,7 @@ function makeRequestAddProject(json_payload) {
 
   const payloadInput = document.createElement('input');
   payloadInput.type = 'hidden';
-  payloadInput.name = 'project_details_json';
+  payloadInput.name = 'project_detail_json';
   payloadInput.value = JSON.stringify(json_payload);
 
   form.appendChild(payloadInput);
@@ -104,32 +195,67 @@ function makeRequestAddProject(json_payload) {
 };
 
 
+// custom 
+
+function customFormSubmission(form) {
+  const formData = new FormData(form);
+  const urlSearchParams = new URLSearchParams(formData);
+  const url = `${form.action}?${urlSearchParams.toString()}`;
+
+  return fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('On customFormSubmission function call | URL : ' + form.action);
+      }
+      return response.text()
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+}
+
+
+// project-search handling
+
+function formSubmissionHandling(form) {
+  customFormSubmission(form)
+    .then((htmlContent) => {
+      const projectList = document.querySelector("#project-list")
+      projectList.innerHTML = htmlContent
+    })
+}
+
+function projectSearchFormSubmit() {
+  const projectForm = document.querySelector("#project-search-section")
+  formSubmissionHandling(projectForm)
+}
+
 
 // clickable span handling
 
-const searchSelectionDiv = document.querySelector('.search-selection-container');
-if (searchSelectionDiv !== null) {
+const searchSelectionDivArray = document.querySelectorAll('.search-selection-container');
+for (const searchSelectionDiv of searchSelectionDivArray) {
   searchSelectionDiv.addEventListener('click', function (event) {
     if (event.target.classList.contains('clickable-span')) {
 
       const clickedSpan = event.target
+      const clickedSpanLi = clickedSpan.parentNode
       // const searchResultsDiv = searchSelectionDiv.querySelector(".search-results")
-      const selectedDiv = searchSelectionDiv.querySelector(".selected")
+      const selectedDiv = searchSelectionDiv.querySelector(".selected.span-list")
 
-      if (clickedSpan.parentNode === selectedDiv) {
-        clickedSpan.remove()
+      if (clickedSpanLi.parentNode === selectedDiv) {
+        clickedSpanLi.remove()
       }
       else {
         let isSameValueSpanExists = false
-
         selectedDiv.querySelectorAll('*').forEach(childElement => {
-          if (childElement.innerHTML === clickedSpan.innerHTML) {
+          if (childElement.textContent === clickedSpanLi.textContent) {
             isSameValueSpanExists = true
           }
         });
 
         if (!isSameValueSpanExists) {
-          selectedDiv.appendChild(clickedSpan.cloneNode(true));
+          selectedDiv.appendChild(clickedSpanLi.cloneNode(true));
         }
       }
 
@@ -138,18 +264,176 @@ if (searchSelectionDiv !== null) {
       let payloadInput = form.querySelector(`input[name="${payloadId}"]`)
 
       if (payloadInput === null) {
-        payloadInput = document.createElement('input');
-        payloadInput.type = 'hidden';
-        payloadInput.name = payloadId;
-        form.appendChild(payloadInput);
+        // this should not be case
       }
 
-      const childTextContents = [];
-      selectedDiv.querySelectorAll('*').forEach(childElement => {
-        childTextContents.push(childElement.textContent.trim()); // Add trimmed text content
+      let childTextContents = [];
+      selectedDiv.querySelectorAll('*').forEach((childElement) => {
+        if (childElement.tagName === "SPAN") {
+          childTextContents.push({
+            id: parseInt(childElement.getAttribute("data-id")),
+            name: childElement.textContent.trim()
+          })
+        }
       });
 
       payloadInput.value = JSON.stringify(childTextContents);
+
+      const projectForm = document.querySelector("#project-search-section")
+      if (projectForm !== null) {
+        formSubmissionHandling(projectForm)
+      }
     }
   });
+}
+
+
+// sort-by handling
+
+const sortBy = document.querySelector("#sort-by")
+if (sortBy !== null) {
+  sortBy.addEventListener("change", (event) => {
+
+    projectSearchFormSubmit()
+
+  })
+}
+
+
+// project-search-bar handling
+const projectSearchForm = document.querySelector("#project-search-section")
+if (projectSearchForm !== null) {
+
+  projectSearchForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    projectSearchFormSubmit()
+  });
+  projectSearchInput = projectSearchForm.querySelector("input[name='project-search']")
+  projectSearchInput.addEventListener('input', (event) => {
+    projectSearchFormSubmit()
+  });
+
+}
+
+// sort-direction handling
+const sortDirection = document.querySelector("#sort-direction")
+if (sortDirection !== null) {
+  sortDirection.addEventListener("click", (event) => {
+    if (event.target.tagName === "SPAN") {
+      span = event.target
+      input = document.querySelector("input[name='sort-direction']")
+      if (input.value === "desc") {
+        span.classList.add("selected")
+        input.value = "asc"
+      } else {
+        span.classList.remove("selected")
+        input.value = "desc"
+      }
+      projectSearchFormSubmit()
+    }
+  })
+}
+
+// organization-only handling
+const organizationOnly = document.querySelector("#organization-only")
+if (organizationOnly !== null) {
+  organizationOnly.addEventListener("click", (event) => {
+    if (event.target.tagName === "SPAN") {
+      span = event.target
+      input = document.querySelector("input[name='organization-only']")
+      if (input.value === "false") {
+        span.classList.add("selected")
+        input.value = "true"
+      } else {
+        span.classList.remove("selected")
+        input.value = "false"
+      }
+
+      projectSearchFormSubmit()
+
+    }
+  })
+}
+
+
+// project-tabs handling
+
+const tabs = document.querySelectorAll(".tab")
+for (const tab of tabs) {
+  tab.addEventListener("click", (event) => {
+    inputField = document.querySelector("input[name='tab']")
+    inputField.value = event.currentTarget.id;
+
+    formSubmissionHandling(projectSearchForm)
+
+    for (const tab of tabs) {
+      tab.classList.remove("selected")
+    }
+    event.currentTarget.classList.add("selected")
+  })
+}
+
+
+
+// project-card action handling
+
+
+const projectList = document.querySelector('#project-list');
+if (projectList !== null) {
+  projectList.addEventListener('click', (event) => {
+
+    // project-delete handling
+    if (event.target.classList.contains("project-delete")) {
+      projectDelete = event.target
+      projectCard = projectDelete.closest(".project-card")
+      projectID = projectCard.getAttribute("data-project-id")
+      url = "/project/" + projectID
+
+      fetchData(url, "DELETE")
+        .then(() => {
+          projectCard.remove()
+        })
+    }
+
+
+    // project-bookmark handling
+    if (event.target.classList.contains("project-toggle-bookmark")) {
+      projectToggleBookmark = event.target
+      projectCard = projectToggleBookmark.closest(".project-card")
+      projectID = projectCard.getAttribute("data-project-id")
+      bookmarkCount = projectCard.querySelector(".bookmark-count")
+      url = "/project/" + projectID + "/toggle-bookmark"
+
+      const isLogin = document.querySelector("#menu-login")
+      if (isLogin === null) {
+        fetchData(url, "PATCH")
+          .then(() => {
+            if (projectToggleBookmark.innerHTML === "bookmark") {
+              bookmarkCount.innerHTML = parseInt(bookmarkCount.innerHTML) - 1
+              projectToggleBookmark.innerHTML = "bookmark_border"
+            } else {
+              bookmarkCount.innerHTML = parseInt(bookmarkCount.innerHTML) + 1
+              projectToggleBookmark.innerHTML = "bookmark"
+            }
+          }
+          )
+      } else {
+        showPopup("Looking to bookmark this? Register for a free account and never lose track of your favorites.")
+      }
+    }
+  })
+}
+
+
+
+
+// userProfilePage
+
+const copyEmail = document.querySelector("#copy-email-btn")
+if (copyEmail !== null) {
+  copyEmail.addEventListener("click", () => {
+    const userEmail = document.querySelector("#user-email")
+    navigator.clipboard.writeText(userEmail.textContent)
+    showPopup("Email copied")
+  })
 }
