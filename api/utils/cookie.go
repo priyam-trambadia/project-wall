@@ -47,3 +47,13 @@ func DeleteTokenCookie(w http.ResponseWriter) {
 	http.SetCookie(w, accessTokenCookie)
 	http.SetCookie(w, refreshTokenCookie)
 }
+
+func SetPopupCookie(w http.ResponseWriter, message string) {
+	cookie := &http.Cookie{
+		Name:  "popup",
+		Value: message,
+		Path:  "/",
+	}
+
+	http.SetCookie(w, cookie)
+}
