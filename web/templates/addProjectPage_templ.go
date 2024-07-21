@@ -240,7 +240,7 @@ func projectFormLanguageSection(languages []models.Language) templ.Component {
 			templ_7745c5c3_Var8 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"languages\">Languages</label> <input type=\"hidden\" id=\"languages\" name=\"languages\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label>Languages</label> <input type=\"hidden\" id=\"languages\" name=\"languages\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -289,7 +289,7 @@ func projectFormTagSection() templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label for=\"tags\">Tags</label> <input type=\"hidden\" id=\"tags\" name=\"tags\" value=\"[]\"> <input type=\"search\" name=\"tag-search\" placeholder=\"Search for a tag...\" hx-get=\"/project/tag/search\" hx-trigger=\"input changed delay:500ms, search\" hx-target=\"next .search-results\" hx-vals=\"{&#34;include_same_tag_if_not_exists&#34;: &#34;true&#34;}\"><div id=\"tags\" class=\"search-selection-container\"><ul class=\"selected span-list\"></ul><ul class=\"search-results span-list\"></ul></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<label>Tags</label> <input type=\"hidden\" id=\"tags\" name=\"tags\" value=\"[]\"> <input type=\"search\" name=\"tag-search\" placeholder=\"Search for a tag...\" hx-get=\"/project/tag/search\" hx-trigger=\"input changed delay:500ms, search\" hx-target=\"next .search-results\" hx-vals=\"{&#34;include_same_tag_if_not_exists&#34;: &#34;true&#34;}\"><div id=\"tags\" class=\"search-selection-container\"><ul class=\"selected span-list\"></ul><ul class=\"search-results span-list\"></ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

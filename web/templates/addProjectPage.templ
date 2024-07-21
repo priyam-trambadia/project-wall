@@ -61,7 +61,7 @@ func languageArrayToJSONString(languages []models.Language) string {
 }
 
 templ projectFormLanguageSection(languages []models.Language) {
-	<label for="languages">Languages</label>
+	<label>Languages</label>
 	<input type="hidden" id="languages" name="languages" value={ languageArrayToJSONString(languages) }/>
 	<div id="languages" class="search-selection-container">
 		<ul class="span-list">
@@ -73,7 +73,7 @@ templ projectFormLanguageSection(languages []models.Language) {
 }
 
 templ projectFormTagSection() {
-	<label for="tags">Tags</label>
+	<label>Tags</label>
 	<input type="hidden" id="tags" name="tags" value="[]"/>
 	<input
 		type="search"

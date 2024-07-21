@@ -78,6 +78,11 @@ function deleteCookie(name) {
   document.cookie = name + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
 }
 
+function setCookie(cname, cvalue) {
+  const date = new Date();
+  document.cookie = cname + "=" + cvalue + "; path=/";
+}
+
 const popupCookie = getCookie('popup');
 if (popupCookie) {
   showPopup(popupCookie)
@@ -406,8 +411,12 @@ if (projectList !== null) {
 
       const isLogin = document.querySelector("#menu-login")
       if (isLogin === null) {
-        fetchData(url, "PATCH")
-          .then(() => {
+        fetch(url, { method: "PATCH" })
+          .then((response) => {
+            if (!response.ok) {
+              return response
+            }
+
             if (projectToggleBookmark.innerHTML === "bookmark") {
               bookmarkCount.innerHTML = parseInt(bookmarkCount.innerHTML) - 1
               projectToggleBookmark.innerHTML = "bookmark_border"
@@ -415,8 +424,17 @@ if (projectList !== null) {
               bookmarkCount.innerHTML = parseInt(bookmarkCount.innerHTML) + 1
               projectToggleBookmark.innerHTML = "bookmark"
             }
+            return null
           }
-          )
+          ).then((response) => {
+            if (response !== null) {
+              setCookie(
+                "popup",
+                "Unfortunately, the project you are trying to access is no longer available."
+              )
+              window.location.reload()
+            }
+          })
       } else {
         showPopup("Looking to bookmark this? Register for a free account and never lose track of your favorites.")
       }
@@ -425,6 +443,16 @@ if (projectList !== null) {
 }
 
 
+// addProjectPage
+
+const tagSearch = document.querySelector("input[type='search']")
+if (tagSearch !== null) {
+  tagSearch.addEventListener("keypress", function (event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+    }
+  })
+}
 
 
 // userProfilePage

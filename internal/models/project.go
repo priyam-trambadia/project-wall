@@ -291,7 +291,7 @@ func (searchQuery ProjectSearchQuery) FindProjectsWithFullTextSearch() ([]Projec
 		ON p.id = pb.project_id
 		WHERE 
 			(	$1 = '' OR
-				p.title LIKE $1 ) AND
+				LOWER(p.title) LIKE LOWER($1) ) AND
 			( $2 = 0 OR
 			  p.id IN ( SELECT project_id
 							 	  FROM project_tags
