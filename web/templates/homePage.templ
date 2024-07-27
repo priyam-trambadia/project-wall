@@ -65,14 +65,6 @@ templ projectListTabs(isLogin bool) {
 	</div>
 }
 
-templ projectList(userID int64, projects []models.Project) {
-	<div id="project-list">
-		for _, project := range projects {
-			@ProjectCard(userID, project)
-		}
-	</div>
-}
-
 templ side(tags []models.Tag, languages []models.Language) {
 	<div id="sidebar">
 		@sideCard(
