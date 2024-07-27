@@ -240,11 +240,8 @@ func UserLogout(w http.ResponseWriter, r *http.Request) {
 
 	utils.DeleteTokenCookie(w)
 
-	userID, err := strconv.ParseInt(r.PathValue("user_id"), 10, 64)
-	if err != nil {
-		utils.RenderInternalServerErr(w)
-		logger.Fatalln(err)
-	}
+	ctx := r.Context()
+	userID, _ := ctx.Value("user_id").(int64)
 
 	if err := models.UpdateUserRefreshToken(userID, jwt.ValEmptyToken); err == models.ErrRecordNotFound {
 		utils.SetPopupCookie(w, "No user found with given details.")
