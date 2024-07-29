@@ -80,8 +80,8 @@ func (user *User) Update() error {
 			name = $1,
 			bio = $2,
 			social_links = $3,
-			updated_at = $5
-		WHERE id = $6;
+			updated_at = $4
+		WHERE id = $5;
 	`
 	args := []interface{}{
 		user.Name,
