@@ -26,33 +26,10 @@ templ content(isLogin bool, userID int64, projects []models.Project, tags []mode
 
 templ main(isLogin bool, userID int64, projects []models.Project) {
 	<div id="main">
-		@projectSearchSection()
+		@projectSearchSection(userID, "")
 		@projectListTabs(isLogin)
 		@projectList(userID, projects)
 	</div>
-}
-
-templ projectSearchSection() {
-	<form id="project-search-section" action="/project/search" method="GET">
-		<select id="sort-by" name="sort-by">
-			<option value="">--- Sort By ---</option>
-			<option value="date">Date</option>
-			<option value="bookmark">Bookmark</option>
-		</select>
-		<input
-			id="project-search"
-			type="search"
-			name="project-search"
-			placeholder="Search for a project..."
-		/>
-		<span id="sort-direction" class="material-icons" data-tooltip="Sort Direction">swap_vert</span>
-		<input type="hidden" name="sort-direction" value="desc"/>
-		<span id="organization-only" class="material-icons" data-tooltip="Organization Only">domain</span>
-		<input type="hidden" name="organization-only" value="false"/>
-		<input type="hidden" name="tags" value="[]"/>
-		<input type="hidden" name="languages" value="[]"/>
-		<input type="hidden" name="tab"/>
-	</form>
 }
 
 templ projectListTabs(isLogin bool) {

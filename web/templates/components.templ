@@ -115,3 +115,27 @@ templ ProjectCard(userID int64, project models.Project) {
 		</div>
 	</div>
 }
+
+templ projectSearchSection(userID int64, defaultTab string) {
+	<form id="project-search-section" action="/project/search" method="GET">
+		<select id="sort-by" name="sort-by">
+			<option value="">--- Sort By ---</option>
+			<option value="date">Date</option>
+			<option value="bookmark">Bookmark</option>
+		</select>
+		<input
+			id="project-search"
+			type="search"
+			name="project-search"
+			placeholder="Search for a project..."
+		/>
+		<span id="sort-direction" class="material-icons" data-tooltip="Sort Direction">swap_vert</span>
+		<input type="hidden" name="sort-direction" value="desc"/>
+		<span id="organization-only" class="material-icons" data-tooltip="Organization Only">domain</span>
+		<input type="hidden" name="organization-only" value="false"/>
+		<input type="hidden" name="tags" value="[]"/>
+		<input type="hidden" name="languages" value="[]"/>
+		<input type="hidden" name="tab" value={ defaultTab }/>
+		<input type="hidden" name="user_id" value={ fmt.Sprintf("%d", userID) }/>
+	</form>
+}
