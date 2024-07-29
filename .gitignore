@@ -2,4 +2,4 @@
 .envrc
 credentials.json
 
-bin/vendor/*
+bin/*
