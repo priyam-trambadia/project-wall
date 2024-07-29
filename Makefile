@@ -3,6 +3,7 @@ include .envrc
 
 GO = go
 VENDOR_BIN_PATH = ./bin/vendor
+BUILD_OUTPUT = ./bin/projectwall
 
 run: templ
 	@${GO} run ./cmd -port=${PORT} -database_url=${DATABASE_URL} 
@@ -17,4 +18,13 @@ migrate:
 
 .PHONEY: build
 build:
-	@${GO} build -o ./bin/projectwall ./cmd/	
+	@${GO} build -o ${BUILD_OUTPUT} ./cmd/	
+
+.PHONY: connect_db
+connect_db:
+	@psql ${DATABASE_URL}	
+
+.PHONEY: install_vendor_bin
+install_vendor_bin:
+	@${GO} install -o ${VENDOR_BIN_PATH} github.com/a-h/templ/cmd/templ@v0.2.747
+	@${GO} install -o ${VENDOR_BIN_PATH} github.com/golang-migrate/migrate/v4/cmd/migrate@latest	
