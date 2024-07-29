@@ -344,17 +344,22 @@ const organizationOnly = document.querySelector("#organization-only")
 if (organizationOnly !== null) {
   organizationOnly.addEventListener("click", (event) => {
     if (event.target.tagName === "SPAN") {
-      span = event.target
-      input = document.querySelector("input[name='organization-only']")
-      if (input.value === "false") {
-        span.classList.add("selected")
-        input.value = "true"
-      } else {
-        span.classList.remove("selected")
-        input.value = "false"
-      }
+      const isLogin = document.querySelector("#menu-login")
+      if (isLogin === null) {
+        span = event.target
+        input = document.querySelector("input[name='organization-only']")
+        if (input.value === "false") {
+          span.classList.add("selected")
+          input.value = "true"
+        } else {
+          span.classList.remove("selected")
+          input.value = "false"
+        }
 
-      projectSearchFormSubmit()
+        projectSearchFormSubmit()
+      } else {
+        showPopup("Find your perfect project match! Filter by organization. Register now or log in to access.")
+      }
 
     }
   })
