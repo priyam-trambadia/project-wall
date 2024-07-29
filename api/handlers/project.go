@@ -134,7 +134,7 @@ func ProjectSearch(w http.ResponseWriter, r *http.Request) {
 
 	var searchQuery models.ProjectSearchQuery
 
-	searchQuery.UserID = userID
+	searchQuery.UserID, _ = strconv.ParseInt(r.FormValue("user_id"), 10, 64)
 	searchQuery.Title = r.FormValue("project-search")
 
 	switch r.FormValue("sort-by") {

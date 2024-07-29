@@ -465,3 +465,45 @@ if (copyEmail !== null) {
     showPopup("Email copied")
   })
 }
+
+const editProfileBtn = document.querySelector("#user-edit-btn")
+if (editProfileBtn !== null) {
+  editProfileBtn.addEventListener("click", () => {
+    const aboutText = document.querySelector("#upp-about-text")
+    const aboutTextarea = document.querySelector("#upp-about-textarea")
+    const userUpdateBtn = document.querySelector("#user-update-btn")
+
+    aboutText.style.display = "none"
+    editProfileBtn.style.display = "none"
+    aboutTextarea.style.display = "block"
+    userUpdateBtn.style.display = "block"
+  })
+}
+
+const userUpdateBtn = document.querySelector("#user-update-btn")
+if (userUpdateBtn !== null) {
+  userUpdateBtn.addEventListener("click", () => {
+    const bio = document.querySelector("#upp-about-textarea")
+    const bioValue = bio.value
+    const url = window.location.href
+
+    fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        "bio": bioValue
+      })
+    })
+      .then(response => {
+        if (!response.ok) {
+          setCookie(
+            "popup",
+            "We're unable to process your request at this time. Please try again later."
+          )
+        }
+        window.location.reload()
+      })
+  })
+}

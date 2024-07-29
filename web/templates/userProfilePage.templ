@@ -2,7 +2,7 @@ package templates
 
 import "github.com/priyam-trambadia/project-wall/internal/models"
 
-templ UserProfilePage(isLogin bool, userID int64, user models.User) {
+templ UserProfilePage(isLogin bool, userID int64, user models.User, projects []models.Project) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -11,22 +11,31 @@ templ UserProfilePage(isLogin bool, userID int64, user models.User) {
 		</head>
 		<body>
 			@nav(isLogin, userID)
-			@uppContent(isLogin, userID, user)
+			@uppContent(isLogin, userID, user, projects)
 			@footer()
 			@commonAssetsLoadLater()
 		</body>
 	</html>
 }
 
-templ uppContent(isLogin bool, userID int64, user models.User) {
-	<div id="upp-content" class="common-content">
-		@uppMain(isLogin, userID, user)
+templ uppContent(isLogin bool, userID int64, user models.User, projects []models.Project) {
+	<div id="upp-content">
+		@uppSide(isLogin, userID, user)
+		@uppMain(userID, user, projects)
 	</div>
 }
 
-templ uppMain(isLogin bool, userID int64, user models.User) {
-	<div id="upp-main" class="common-main">
+templ uppSide(isLogin bool, userID int64, user models.User) {
+	<div id="upp-side">
 		@uppCard(isLogin, userID, user)
+		@uppAbout(isLogin, userID, user)
+	</div>
+}
+
+templ uppMain(userID int64, user models.User, projects []models.Project) {
+	<div id="upp-main">
+		@projectSearchSection(user.ID, "my_projects")
+		@projectList(userID, projects)
 	</div>
 }
 
@@ -43,6 +52,20 @@ templ uppCard(isLogin bool, userID int64, user models.User) {
 			<button id="user-delete-btn" class="user-btn" hx-delete="">Delete Account</button>
 		} else {
 			<button id="copy-email-btn" class="user-btn">Copy Email</button>
+		}
+	</div>
+}
+
+templ uppAbout(isLogin bool, userID int64, user models.User) {
+	<div id="upp-about">
+		<span id="upp-about-title">About</span>
+		<p id="upp-about-text">{ user.Bio }</p>
+		if isLogin && userID == user.ID {
+			<button id="user-edit-btn" class="user-btn">Edit Profile</button>
+			<textarea id="upp-about-textarea" type="text" name="bio">
+				{ user.Bio }
+			</textarea>
+			<button id="user-update-btn" class="user-btn">Update Profile</button>
 		}
 	</div>
 }

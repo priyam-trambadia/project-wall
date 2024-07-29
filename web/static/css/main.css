@@ -423,11 +423,6 @@ footer a:hover {
   flex-wrap: wrap;
 }
 
-/* .span-list.selected {
-  margin-bottom: 8px;
-} */
-
-
 .span-list.selected .clickable-span {
   background-color: var(--burnt-sienna) !important;
   color: #fff !important;
@@ -555,13 +550,41 @@ footer a:hover {
 
 /* 
   ------
-  --- RESET PASSWORD PAGE CSS --->
+  --- USER PROFILE PAGE CSS --->
   ------
 */
+
+#upp-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  padding: 0 10vw;
+}
+
+#upp-side {
+  min-width: 300px;
+  max-width: 300px;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+#upp-main {
+  flex-grow: 1;
+  margin-left: 20px;
+}
+
+#upp-main #project-search-section {
+  margin-bottom: 25px;
+}
 
 #user-profile-card {
   display: flex;
   flex-direction: column;
+  padding: 20px;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 #user-data {
@@ -570,11 +593,10 @@ footer a:hover {
 }
 
 #user-info {
-  margin-left: 25px;
+  margin-left: 16px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding-bottom: 1px;
 }
 
 #upp-content #user-avatar {
@@ -586,24 +608,57 @@ footer a:hover {
 
 #user-name,
 #user-email {
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--slate-blue);
   text-align: left;
+  overflow-wrap: anywhere;
 }
 
 #user-name {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   color: #000;
+}
+
+#user-email {
+  display: inline-block;
 }
 
 .user-btn {
   width: 100%;
   margin-top: 2px;
-  padding: 6px;
-  font-weight: 500;
+  padding: 5px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
+#upp-about {
+  padding: 20px;
+  border-radius: 6px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#upp-about-title {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+#upp-about-textarea,
+#user-update-btn {
+  display: none;
+}
+
+#upp-about-textarea {
+  width: 200px;
+  margin: 20px 0;
+}
+
+#upp-about-text {
+  font-size: 0.85rem;
+  text-align: justify;
+  color: #222;
+}
 
 /* 
   ------

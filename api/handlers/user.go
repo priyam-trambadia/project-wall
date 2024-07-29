@@ -2,13 +2,15 @@ package handlers
 
 import (
 	"context"
+	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 
 	"github.com/priyam-trambadia/project-wall/api/utils"
 	"github.com/priyam-trambadia/project-wall/api/utils/jwt"
 	"github.com/priyam-trambadia/project-wall/internal/logger"
-	"github.com/priyam-trambadia/project-wall/internal/mail"
+	"github.com/priyam-trambadia/project-wall/internal/mailer"
 	"github.com/priyam-trambadia/project-wall/internal/models"
 	"github.com/priyam-trambadia/project-wall/web/templates"
 )
@@ -51,7 +53,7 @@ func UserRegisterPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	link := utils.GetUserActivationLink(token)
-	if err := mail.SendUserActivationMail(user.Email, link); err != nil {
+	if err := mailer.SendUserActivationMail(user.Email, link); err != nil {
 		utils.RenderInternalServerErr(w)
 		logger.Fatalln(err)
 	}
@@ -96,7 +98,7 @@ func UserLoginPOST(w http.ResponseWriter, r *http.Request) {
 		}
 
 		link := utils.GetUserActivationLink(token)
-		mail.SendUserActivationMail(user.Email, link)
+		mailer.SendUserActivationMail(user.Email, link)
 		utils.SetPopupCookie(
 			w,
 			"Your account is not yet activated. We have re-sent the activation email. Please check your inbox.",
@@ -185,7 +187,7 @@ func UserForgotPasswordPOST(w http.ResponseWriter, r *http.Request) {
 	}
 
 	link := utils.GetUserPasswordResetLink(token)
-	if err := mail.SendUserPasswordResetMail(email, link); err != nil {
+	if err := mailer.SendUserPasswordResetMail(email, link); err != nil {
 		utils.RenderInternalServerErr(w)
 		logger.Fatalln(err)
 	}
@@ -275,10 +277,43 @@ func UserGetProfile(w http.ResponseWriter, r *http.Request) {
 		logger.Fatalln(err)
 	}
 
-	templates.UserProfilePage(isUserLogin, userID, user).Render(context.Background(), w)
+	var searchQuery models.ProjectSearchQuery
+	searchQuery.UserID = user.ID
+	searchQuery.Tab = models.MyProjects
+
+	projects, err := searchQuery.FindProjectsWithFullTextSearch()
+	if err != nil {
+		utils.RenderInternalServerErr(w)
+		logger.Fatalln(err)
+	}
+
+	templates.UserProfilePage(isUserLogin, userID, user, projects).Render(context.Background(), w)
 }
 
-func UserUpdateProfile(w http.ResponseWriter, r *http.Request) {}
+func UserUpdateProfile(w http.ResponseWriter, r *http.Request) {
+	logger := logger.Logger{Caller: "UserUpdateProfile handler"}
+
+	userID, _ := strconv.ParseInt(r.PathValue("user_id"), 10, 64)
+	user := models.User{ID: userID}
+
+	body, _ := io.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	if err := user.Get(); err != nil {
+		logger.Fatalln(err)
+	}
+
+	if err := json.Unmarshal(body, &user); err != nil {
+		utils.RenderInvalidJSONErr(w)
+		return
+	}
+
+	if err := user.Update(); err != nil {
+		logger.Fatalln(err)
+	}
+
+}
+
 func UserDeleteProfile(w http.ResponseWriter, r *http.Request) {
 	logger := logger.Logger{Caller: "UserDeleteProfile handler"}
 
