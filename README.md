@@ -2,6 +2,8 @@
 
 ProjectWall is a platform designed to showcase and explore projects. Powerful search allows you to discover relevant projects based on your interests.
 
+Temporarily visit link [ProjectWall](https://priyam-trambadia.github.io/project-wall-redirect/)
+
 ## Prerequisites
 
 > Tested on Ubuntu. Functionality on other systems may vary.
@@ -48,3 +50,7 @@ make
 ```
 
 ## Screenshot
+![Home Page](docs/screenshots/1_homePage.png)
+![Home Page | My Projects](docs/screenshots/2_homePage.png)
+![User Profile Page](docs/screenshots/3_userProfilePage.png)
+![Add Project Page](docs/screenshots/4_addProjectPage.png)
