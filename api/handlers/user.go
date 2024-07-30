@@ -287,6 +287,16 @@ func UserGetProfile(w http.ResponseWriter, r *http.Request) {
 		logger.Fatalln(err)
 	}
 
+	for index, project := range projects {
+		projectBookmark := models.ProjectBookmark{UserID: userID, ProjectID: project.ID}
+		isBookmarked, err := projectBookmark.GetUserBookmarkStatus()
+		if err != nil {
+			utils.RenderInternalServerErr(w)
+			logger.Fatalln(err)
+		}
+		projects[index].UserBookmarkStatus = isBookmarked
+	}
+
 	templates.UserProfilePage(isUserLogin, userID, user, projects).Render(context.Background(), w)
 }
 
