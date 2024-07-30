@@ -11,6 +11,10 @@ run: templ
 templ:
 	@${VENDOR_BIN_PATH}/templ generate -path ./web/templates
 
+.PHONEY: background_run
+background_run:
+	${GO} run ./cmd -port=${PORT} -database_url=${DATABASE_URL} 2>&1 > output.log &
+
 .PHONEY: migrate
 migrate:	
 	@${VENDOR_BIN_PATH}/migrate -path=./migrations -database=${DATABASE_URL} down
