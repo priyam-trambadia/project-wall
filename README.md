@@ -50,7 +50,13 @@ make
 ```
 
 ## Screenshot
+
+### Home Page
 ![Home Page](docs/screenshots/1_homePage.png)
 ![Home Page | My Projects](docs/screenshots/2_homePage.png)
+
+### User Profile Page
 ![User Profile Page](docs/screenshots/3_userProfilePage.png)
+
+### Add Project Page
 ![Add Project Page](docs/screenshots/4_addProjectPage.png)
