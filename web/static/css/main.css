@@ -331,7 +331,6 @@ footer a:hover {
 
 .clickable-span:hover {
   color: #000;
-  background-color: var(--burnt-sienna);
   transition: background-color 0.3s;
 }
 
