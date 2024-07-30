@@ -14,7 +14,7 @@ import (
 
 func ProjectCreate(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	isUserLogin, _ := ctx.Value("is_user_login").(bool)
+	isUserLogin, _ := ctx.Value("is_user_login_in").(bool)
 	userID, _ := ctx.Value("user_id").(int64)
 
 	if err := r.ParseForm(); err != nil {
