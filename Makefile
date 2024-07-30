@@ -29,5 +29,5 @@ install_vendor_bin:
 	@mkdir -p ${VENDOR_BIN_PATH}
 	@${GO} install github.com/a-h/templ/cmd/templ@v0.2.747
 	@mv ${HOME}/go/bin/templ ${VENDOR_BIN_PATH}
-	@${GO} install -o ${VENDOR_BIN_PATH} github.com/golang-migrate/migrate/v4/cmd/migrate@latest	
+	@${GO} install github.com/golang-migrate/migrate/v4/cmd/migrate@latest	
 	@mv ${HOME}/go/bin/migrate ${VENDOR_BIN_PATH}
